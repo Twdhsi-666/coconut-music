@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>椰子音乐</title>
+<link rel="icon" type="image/x-icon" href="/icon.ico">
+<link rel="shortcut icon" type="image/x-icon" href="/icon.ico">
+<link rel="apple-touch-icon" href="/icon.png">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- ===================== 顶栏 ===================== -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">🥥</span>
+      <span class="brand-name">椰子音乐</span>
+    </div>
+
+    <div class="searchbox">
+      <svg class="ic" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+      <input id="searchInput" type="text" placeholder="搜索歌曲、歌手、UP主" autocomplete="off">
+      <button id="searchBtn">搜索</button>
+    </div>
+
+    <div class="top-actions">
+      <select id="orderSel" title="搜索结果排序">
+        <option value="totalrank">综合排序</option>
+        <option value="click">播放最多</option>
+        <option value="pubdate">最新发布</option>
+        <option value="stow">收藏最多</option>
+      </select>
+      <button id="themeBtn" class="icon-btn" title="切换浅色 / 深色">🌙</button>
+      <button id="settingsBtn" class="icon-btn" title="设置">⚙</button>
+      <button id="loginBtn" class="ghost-btn">登录</button>
+    </div>
+  </header>
+
+  <!-- ===================== 侧栏 ===================== -->
+  <aside class="sidebar">
+    <nav class="nav">
+      <a class="nav-item active" data-view="discover">
+        <svg class="ic" viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>
+        <span>发现音乐</span>
+      </a>
+      <a class="nav-item" data-view="search">
+        <svg class="ic" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+        <span>搜索结果</span>
+      </a>
+      <a class="nav-item" data-view="share">
+        <svg class="ic" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+        <span>导入音乐与歌单</span>
+      </a>
+      <a class="nav-item" data-view="history">
+        <svg class="ic" viewBox="0 0 24 24"><path d="M13 3a9 9 0 0 0-9 9H1l3.9 3.9L9 12H6a7 7 0 1 1 2 4.9l-1.4 1.4A9 9 0 1 0 13 3zm-1 5v5l4.3 2.5.7-1.2-3.5-2.1V8H12z"/></svg>
+        <span>播放历史</span>
+      </a>
+      <a class="nav-item" data-view="download">
+        <svg class="ic" viewBox="0 0 24 24"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"/></svg>
+        <span>下载音乐</span>
+      </a>
+    </nav>
+
+    <div class="side-title">
+      <span>我的歌单</span>
+      <button id="newPlaylistBtn" class="mini-btn" title="新建歌单">＋</button>
+    </div>
+    <div id="playlistList" class="playlist-list"></div>
+  </aside>
+
+  <!-- ===================== 主内容区 ===================== -->
+  <main class="content" id="content"></main>
+
+  <!-- ===================== 右侧 正在播放 ===================== -->
+  <aside class="nowbar">
+    <div class="now-card">
+      <div class="now-cover" id="nowCover">
+        <span class="ph">♪</span>
+      </div>
+      <div class="now-title" id="nowTitle">还没有播放歌曲</div>
+      <div class="now-artist" id="nowArtist">从搜索开始吧</div>
+      <div class="now-tags" id="nowTags"></div>
+      <div class="now-actions">
+        <button id="favNowBtn" class="ghost-btn small">收藏</button>
+        <button id="addNowBtn" class="ghost-btn small">加入歌单</button>
+      </div>
+    </div>
+    <div class="queue-head">
+      <span>播放队列</span>
+      <button id="clearQueueBtn" class="mini-btn" title="清空队列">清空</button>
+    </div>
+    <div id="queueList" class="queue-list"></div>
+  </aside>
+
+  <!-- ===================== 底部播放条 ===================== -->
+  <footer class="player">
+    <div class="p-left">
+      <div class="p-cover" id="pCover"><span class="ph">♪</span></div>
+      <div class="p-meta">
+        <div class="p-title" id="pTitle">未在播放</div>
+        <div class="p-artist" id="pArtist">—</div>
+      </div>
+      <button id="pFavBtn" class="icon-btn small" title="收藏到「我喜欢的音乐」">♡</button>
+    </div>
+
+    <div class="p-center">
+      <div class="p-btns">
+        <button id="modeBtn" class="icon-btn" title="播放模式">🔁</button>
+        <button id="prevBtn" class="icon-btn" title="上一首">
+          <svg viewBox="0 0 24 24" class="ic"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+        </button>
+        <button id="playBtn" class="play-btn" title="播放 / 暂停">
+          <svg viewBox="0 0 24 24" class="ic" id="playIcon"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <button id="nextBtn" class="icon-btn" title="下一首">
+          <svg viewBox="0 0 24 24" class="ic"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z"/></svg>
+        </button>
+        <button id="volBtn" class="icon-btn" title="静音">🔊</button>
+      </div>
+      <div class="p-progress">
+        <span id="curTime">00:00</span>
+        <input id="progress" type="range" min="0" max="1000" value="0" step="1">
+        <span id="totTime">00:00</span>
+      </div>
+    </div>
+
+    <div class="p-right">
+      <button id="eqBtn" class="loud-btn" title="图形均衡器">🎛 均衡器</button>
+      <button id="loudBtn" class="loud-btn on" title="响度均衡已开：自动把大声的压下来、小声的提上来">⚖ 均衡</button>
+      <span id="qualityTag" class="quality-tag">音质 —</span>
+      <input id="volume" type="range" min="0" max="100" value="85">
+      <span id="volHint" class="vol-hint">85%</span>
+      <button id="queueBtn" class="icon-btn" title="收起 / 展开播放队列">☰</button>
+    </div>
+  </footer>
+
+  <audio id="audio" preload="auto"></audio>
+</div>
+
+<div id="toastWrap" class="toast-wrap"></div>
+<div id="modalWrap" class="modal-wrap hidden">
+  <div class="modal-mask"></div>
+  <div class="modal-box" id="modalBox"></div>
+</div>
+
+<script src="/equalizer.js"></script>
+<script src="/app.js"></script>
+<script src="/settings.js"></script>
+</body>
+</html>

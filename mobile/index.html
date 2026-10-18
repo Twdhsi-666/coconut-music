@@ -1,0 +1,5116 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-skin="paper">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FDF8F0">
+  <meta name="format-detection" content="telephone=no">
+  <title>椰子音乐</title>
+<style>
+/* ===== 00-tokens.css ===== */
+/* ==========================================================================
+   椰子音乐 4 · tokens.css
+   手绘风格设计系统 · 唯一真相来源
+   --------------------------------------------------------------------------
+   风格：Hand-Drawn / Sketch
+   圆润圆角 + 双线叠画（外层实线 + 内层低透明复线错开旋转）+ 手写体
+
+   【与旧版最大的不同】
+   旧版：0 圆角硬边框 + 硬投影 = 新粗野主义（方格子）
+   本版：18–26px 圆润角 + 无硬投影 + 手写字 = 手绘感
+   ========================================================================== */
+
+:root {
+  /* ---------- 字体族 ----------
+     【2026-10-09 改】用户反馈："不希望用下载好的成品字体，
+     手机自带字体是最好看的，手机自己会有一套自己的字体"。
+     → 全部改回系统字体栈。手绘感只靠**线条与色块**表达，不依赖字体。
+     Android 上会命中 Noto Sans CJK / 鸿蒙的 HarmonyOS Sans；
+     iOS 上命中 PingFang SC。都不需要下载任何东西。 */
+  --font-ui: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'HarmonyOS Sans SC',
+             'Noto Sans CJK SC', 'Source Han Sans SC', 'Microsoft YaHei', sans-serif;
+  --font-num: ui-monospace, 'SF Mono', 'Roboto Mono', Menlo, monospace;
+
+  /* 字重：系统字体用 500/600 就够，不要 700（黑体会和手绘线条打架）*/
+  --fw: 500;
+  --fw-strong: 600;
+
+  /* ---------- 纸底色 ----------
+     不用纯白（刺眼），用暖米白纸感 */
+  --paper: #FDF8F0;
+  --paper-2: #FFFFFF;
+  --paper-3: #FFF3E0;
+
+  /* ---------- 墨色（线条与文字）---------- */
+  --ink: #2B2B2B;          /* 主线条 */
+  --ink-2: #4A4A44;        /* 次级文字 */
+  --ink-3: #7A7A6E;        /* 辅助文字 */
+  --ink-4: #A8A89C;        /* 占位/禁用 */
+
+  /* ---------- 线条 ----------
+     手绘感的核心：描边用圆头，略带不透明度
+
+     【线宽体系 4.03 统一】
+     之前全站混着 2.5px / 1.5px / 1.2px / 1px 四种，
+     细线配粗线看着巨突兀（例：歌曲行描边很细，
+     但「我的」里的头像框很粗）。
+     用户原话：「可以试试把细线全部去掉，只保留粗线」
+     → 现在**全站只有一级线宽 2.5px**。
+     1px 以下的「发丝线」全部取消。 */
+  --line-w: 2.5px;         /* 唯一描边线宽（全站统一） */
+  --line-w-thin: 1.2px;    /* 复线（双线叠画的内层，由 --line-double 控制） */
+  --line-alpha: 0.28;      /* 复线透明度 */
+  /* 双线开关：1 = 双实线（手绘叠画），0 = 单实线。
+     设置 → 外观里可切换。 */
+  --line-double: 1;
+
+  /* ---------- 强调色（可在设置里切换）---------- */
+  --accent: #FF6B4A;       /* 珊瑚橘（默认）*/
+  --accent-soft: #FFE8E0;
+  --accent-2: #FFD93B;     /* 马克笔黄 */
+  --accent-3: #3B7DD8;     /* 手绘蓝 */
+  --accent-4: #1AE5C0;     /* 薄荷 */
+
+  /* ---------- 圆角体系（圆润是手绘感的核心）---------- */
+  --r-sm: 12px;      /* 小封面 */
+  --r-md: 18px;      /* 卡片 */
+  --r-lg: 22px;      /* 大卡片 / MiniPlayer */
+  --r-xl: 26px;      /* Tab 栏 */
+  --r-full: 999px;   /* 圆形按钮 */
+
+  /* ---------- 尺寸（触摸目标 ≥44）---------- */
+  --sz-icon: 44px;   /* 操作按钮 */
+  --sz-icon-lg: 56px;/* 上下一首 */
+  --sz-play: 64px;   /* 主播放键 */
+  --sz-cover: 44px;  /* 行内封面 */
+  --row-h: 60px;     /* 歌曲行高 */
+
+  /* ---------- 间距 ----------
+     【2026-10-09 加厚】用户反馈"图标大到离谱，占视野，要多留白"。
+     留白不只是"多几个 px"，是重新分配：
+       --pad   22 → 24   内容左右留白
+       --gap-s  8 → 10   小间距
+       --gap    14 → 16  常规间距
+       --gap-l  20 → 26  区块内元素间距
+       --gap-xl 28 → 36  区块间距
+     封面在卡片里不再撑满，改成留出内边距。 */
+  --pad: 24px;       /* 内容左右边距 */
+  --gap-s: 10px;
+  --gap: 16px;
+  --gap-l: 26px;
+  --gap-xl: 36px;
+
+  /* ---------- 固定尺寸 ---------- */
+  --topbar-h: 56px;
+  --mini-h: 66px;
+  --tabbar-h: 66px;
+
+  /* ---------- 安全区 ---------- */
+  --sys-top: 0px;
+  --sys-bot: 0px;
+  --safe-t: max(env(safe-area-inset-top, 0px), var(--sys-top, 0px));
+  --safe-b: max(env(safe-area-inset-bottom, 0px), var(--sys-bot, 0px));
+
+  /* ---------- 动效：手绘风要「慢一点、软一点」---------- */
+  --ease: cubic-bezier(.34, 1.3, .64, 1);   /* 带回弹，像手按下去 */
+  --t: transform .18s var(--ease), opacity .18s ease;
+}
+
+/* ==========================================================================
+   主题：深色牛皮纸（设置里可切换）
+   ========================================================================== */
+html[data-skin="dark"] {
+  --paper: #1C1A18;
+  --paper-2: #262320;
+  --paper-3: #302B26;
+  --ink: #F5EFE4;
+  --ink-2: #D8D0C2;
+  --ink-3: #A09888;
+  --ink-4: #6E675C;
+  --accent: #FFD93B;
+  --accent-soft: rgba(255, 217, 59, .16);
+  --accent-2: #FF6B4A;
+  --accent-3: #1AE5C0;
+  --accent-4: #FF8AC4;
+}
+
+/* ==========================================================================
+   主题：白底彩笔（设置里可切换）
+   ========================================================================== */
+html[data-skin="pen"] {
+  --paper: #FFFFFF;
+  --paper-2: #FFFDF5;
+  --paper-3: #F0F7FF;
+  --ink: #1A1A1A;
+  --ink-2: #3D3D3D;
+  --ink-3: #6B6B6B;
+  --ink-4: #A0A0A0;
+  --accent: #2E7DF7;
+  --accent-soft: #E3EEFF;
+  --accent-2: #FF4FA3;
+  --accent-3: #37C978;
+  --accent-4: #FFC53D;
+}
+
+/* ==========================================================================
+   主题：夜光黑（设置里可切换）
+   ========================================================================== */
+html[data-skin="neon"] {
+  --paper: #0D0D0D;
+  --paper-2: #161616;
+  --paper-3: #1E1E1E;
+  --ink: #F0F0F0;
+  --ink-2: #C8C8C8;
+  --ink-3: #909090;
+  --ink-4: #5A5A5A;
+  --accent: #1AE5C0;
+  --accent-soft: rgba(26, 229, 192, .14);
+  --accent-2: #FF3D8A;
+  --accent-3: #FFE14D;
+  --accent-4: #6C8CFF;
+}
+
+/* ==========================================================================
+   手绘线条工具类
+   --------------------------------------------------------------------------
+   .sketch —— 双线叠画。用法：给任意有 border-radius 的元素加上，
+   它会自动生成一层低透明复线并轻微旋转，这是手绘感的核心手法。
+   ========================================================================== */
+.sketch {
+  position: relative;
+}
+
+/* 手绘下划线：双线 + 圆头 */
+.sketch-underline {
+  height: 14px;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+
+/* ===== 01-base.css ===== */
+/* ==========================================================================
+   椰子音乐 4 · 01-base.css
+   重置 / 手绘基础组件 / 通用原子类
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  font-size: clamp(15px, 4.4vw, 17px);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+  transition: background-color .3s ease, color .3s ease;
+}
+
+h1, h2, h3, p, figure { margin: 0; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+button { font-family: inherit; }
+
+/* ---------- 手写标题 ---------- */
+.hand {
+  font-family: var(--font-ui);
+  font-weight: var(--fw-strong);
+  line-height: 1.15;
+  letter-spacing: .3px;
+}
+.hand-cn {
+  font-family: var(--font-ui);
+}
+
+/* ---------- 通用排版 ---------- */
+.t-page   { font-family: var(--font-ui); font-size: 2rem;   font-weight: var(--fw-strong); }
+.t-sec    { font-family: var(--font-ui); font-size: 1.375rem; font-weight: var(--fw-strong); }
+.t-card   { font-family: var(--font-ui); font-size: 1.125rem; font-weight: var(--fw-strong); }
+.t-name   { font-size: .9375rem; line-height: 1.3; }
+.t-artist { font-size: .8125rem; line-height: 1.35; color: var(--ink-3); }
+.t-cap    { font-size: .75rem; color: var(--ink-3); }
+.t-num    { font-variant-numeric: tabular-nums; }
+
+/* ---------- 截断 ---------- */
+.trunc {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------- 滚动 ---------- */
+.scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+.scroll::-webkit-scrollbar { width: 0; height: 0; }
+
+.scroll-x {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.scroll-x::-webkit-scrollbar { height: 0; }
+
+/* ==========================================================================
+   手绘卡片 —— 全站唯一实现
+   圆角 18px + 2.5px 墨色描边 + 双线叠画，无硬投影
+   ========================================================================== */
+.card {
+  position: relative;
+  background: var(--paper-2);
+  border: var(--line-w) solid var(--ink);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+/* 复线只在需要时叠，不覆盖子元素点击 */
+.card > * { position: relative; z-index: 2; }
+
+/* 卡片按钮
+   【修】原来写 `border: 0`，把 <button> 的浏览器默认边框重置掉了 ——
+   但 .card-btn 和 .card 同为类选择器、.card-btn 在后，
+   于是把 .card 的 2.5px 描边整个覆盖成0。
+   表现：入口卡/歌单卡完全没有描边，只剩直角框 + 复线，4倍放大能看到断成黑杠。
+   修法：按钮默认样式只重置该重置的（背景/颜色/字体），
+   描边交还给 .card。 */
+.card-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+.card-btn:active { transform: scale(.98); transition: var(--t); }
+
+/* ==========================================================================
+   手绘按钮
+   ========================================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap-s);
+  min-height: var(--sz-icon);
+  padding: 0 20px;
+  border: var(--line-w) solid var(--ink);
+  border-radius: var(--r-full);
+  background: var(--paper-2);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--t);
+}
+.btn:active { transform: scale(.95); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+
+.btn-fill {
+  background: var(--accent);
+  color: #fff;
+}
+html[data-skin="dark"] .btn-fill,
+html[data-skin="neon"] .btn-fill { color: var(--paper); }
+
+.btn-block { width: 100%; }
+.btn-sm { min-height: 36px; padding: 0 14px; font-size: .875rem; }
+
+/* 圆形图标按钮：圆头描边 + 双线 */
+.ibtn {
+  position: relative;
+  width: var(--sz-icon);
+  height: var(--sz-icon);
+  min-width: var(--sz-icon);
+  min-height: var(--sz-icon);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: var(--line-w) solid var(--ink);
+  border-radius: var(--r-full);
+  background: var(--paper-2);
+  color: var(--ink);
+  cursor: pointer;
+  padding: 0;
+  transition: var(--t);
+}
+.ibtn:active { transform: scale(.9); }
+
+/* 规则 G2：视觉 36px 但热区扩到 44px。
+   伪元素不占布局，纯扩大可点范围。 */
+.ibtn.sm::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 44px;
+  height: 44px;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+}
+.ibtn.fill { background: var(--accent); color: #fff; }
+html[data-skin="dark"] .ibtn.fill,
+html[data-skin="neon"] .ibtn.fill { color: var(--paper); }
+.ibtn.sm { width: 36px; height: 36px; min-width: 36px; min-height: 36px; }
+.ibtn.lg { width: var(--sz-icon-lg); height: var(--sz-icon-lg); min-width: var(--sz-icon-lg); min-height: var(--sz-icon-lg); }
+.ibtn.xl { width: var(--sz-play); height: var(--sz-play); min-width: var(--sz-play); min-height: var(--sz-play); }
+.ibtn.on { color: var(--accent); border-color: var(--accent); }
+
+/* ==========================================================================
+   SVG 图标
+   ========================================================================== */
+.svg {
+  width: 1.375rem;
+  height: 1.375rem;
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: none;
+  pointer-events: none;
+}
+.svg-fill { fill: currentColor; stroke: none; }
+.svg-sm { width: 1.125rem; height: 1.125rem; }
+.svg-lg { width: 1.75rem; height: 1.75rem; }
+.svg-xl { width: 2rem; height: 2rem; }
+
+/* ==========================================================================
+   歌曲行
+   ========================================================================== */
+.srow {
+  display: flex;
+  align-items: center;
+  gap: var(--gap);
+  min-height: var(--row-h);
+  padding: var(--gap-s) 10px;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: background-color .18s ease;
+}
+/* ---- 歌曲行序号：对标 某音乐平台的两位大数字（01. 02. …）----
+   原本序号在最左（宽 22px 小字），现在挪到封面之后，
+   用大号等宽数字，成为这一行的视觉锚点。 */
+.srow-no {
+  flex: none;
+  min-width: 34px;
+  font-size: 1.25rem;
+  font-weight: var(--fw-strong);
+  line-height: 1;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .5px;
+  text-align: left;
+}
+/* 当前播放行：序号跟着歌名一起变强调色，和 某音乐平台一致 */
+.srow.on .srow-no { color: var(--accent); }
+.srow:active { background: var(--paper-3); }
+
+.srow-cover {
+  width: var(--sz-cover);
+  height: var(--sz-cover);
+  border-radius: var(--r-sm);
+  border: var(--line-w) solid var(--ink);
+  object-fit: cover;
+  flex: none;
+  background: var(--paper-3);
+}
+
+.srow-txt {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.srow-dur {
+  flex: none;
+  font-size: .75rem;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.srow-more {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  background: none;
+  color: var(--ink-3);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border-radius: var(--r-full);
+}
+
+/* 正在播放：高亮 + 手绘声波 */
+.srow.on .srow-name { color: var(--accent); }
+.wave {
+  width: var(--sz-cover);
+  flex: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2.5px;
+  height: var(--sz-cover);
+}
+.wave i {
+  width: 3px;
+  border-radius: 3px;
+  background: var(--accent);
+  animation: wv .9s ease-in-out infinite;
+}
+.wave i:nth-child(1) { height: 40%; animation-delay: 0s; }
+.wave i:nth-child(2) { height: 80%; animation-delay: .15s; }
+.wave i:nth-child(3) { height: 55%; animation-delay: .3s; }
+.wave i:nth-child(4) { height: 90%; animation-delay: .45s; }
+@keyframes wv {
+  0%, 100% { transform: scaleY(.4); }
+  50%      { transform: scaleY(1); }
+}
+.srow[data-state="paused"] .wave i { animation-play-state: paused; }
+
+/* ==========================================================================
+   横向入口条目（首页四个入口）
+   --------------------------------------------------------------------------
+   原来是 2×2 大方块 + 满幅封面，视觉重量太大（用户反馈"占视野"）。
+   改成一行式：56px 小封面 + 文字 + 可选播放键。
+   ========================================================================== */
+.ent-row {
+  display: flex;
+  align-items: center;
+  gap: var(--gap);
+  padding: 12px 14px;
+  min-height: 80px;
+}
+.ent-cover {
+  width: 56px;
+  height: 56px;
+  flex: none;
+  border-radius: var(--r-sm);
+  border: var(--line-w) solid var(--ink);
+  background-size: cover;
+  background-position: center;
+  display: grid;
+  place-items: center;
+  color: var(--ink-2);
+  position: relative;
+  overflow: hidden;
+}
+.ent-cover img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* 【已删】.ent-cover::before —— 普通圆角复线（border-radius:9px + rotate(-1deg)）
+   和超椭圆主描边形状对不上，旋转后四角会伸出主描边 → 封面出现缺口。
+   复线改由 60-squircle-apply.js 的 overlay 画（与主描边同一条超椭圆路径）。 */
+.ent-txt { flex: 1 1 0; min-width: 0; }
+.ent-txt .t-name { font-weight: var(--fw-strong); }
+.ent-play {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: var(--line-w) solid var(--ink);
+  color: #fff;
+  display: grid;
+  place-items: center;
+}
+html[data-skin="dark"] .ent-play,
+html[data-skin="neon"] .ent-play { color: var(--paper); }
+
+/* ==========================================================================
+   设置行 / 列表行
+   ========================================================================== */
+.srow-set {
+  display: flex;
+  align-items: center;
+  gap: var(--gap);
+  min-height: 54px;
+  padding: var(--gap) 16px;
+  background: var(--paper-2);
+  cursor: pointer;
+  transition: background-color .18s ease;
+  position: relative;
+}
+/* 行分隔线
+   【删掉原来的 border-bottom:2px solid】
+   那是直角线，而外层卡片的描边走的是连续圆角（超椭圆）——
+   两套画法在卡片底部圆角处打架，视觉上就成了一条「歪斜的粗线」。
+   改成「内侧渐隐」：从透明淡入到墨色，起点终点都是淡的，
+   不与任何圆角冲突。 */
+.srow-set + .srow-set::before {
+  content: '';
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(to right,
+    transparent, var(--ink) 12%, var(--ink) 88%, transparent);
+  opacity: .32;
+  pointer-events: none;
+}
+.srow-set:active { background: var(--paper-3); }
+.srow-set-txt { flex: 1 1 0; min-width: 0; }
+.srow-set-val { flex: none; font-size: .8125rem; color: var(--ink-3); max-width: 40%; }
+.srow-set-ico { flex: none; color: var(--ink-2); display: flex; }
+
+/* 开关 */
+.switch {
+  flex: none;
+  width: 54px;
+  height: 32px;
+  border: var(--line-w) solid var(--ink);
+  border-radius: var(--r-full);
+  background: var(--paper);
+  position: relative;
+  cursor: pointer;
+  padding: 0;
+  transition: var(--t);
+}
+.switch::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--ink);
+  transition: transform var(--ease);
+}
+.switch[aria-checked="true"] { background: var(--accent); }
+.switch[aria-checked="true"]::after { transform: translateX(22px); background: #fff; }
+
+/* 选择器 chips */
+.chips { display: flex; flex-wrap: wrap; gap: var(--gap-s); padding: var(--gap) 16px; }
+.chip {
+  padding: 8px 16px;
+  min-height: 38px;
+  border: var(--line-w) solid var(--ink);
+  border-radius: var(--r-full);
+  background: var(--paper-2);
+  color: var(--ink);
+  font-size: .875rem;
+  cursor: pointer;
+  transition: var(--t);
+}
+.chip.on { background: var(--accent); color: #fff; border-color: var(--ink); }
+html[data-skin="dark"] .chip.on,
+html[data-skin="neon"] .chip.on { color: var(--paper); }
+
+/* 主题色 / 皮肤选择圆点 */
+.swatches { display: flex; flex-wrap: wrap; gap: var(--gap); padding: var(--gap) 16px; }
+.swatch {
+  width: 44px;
+  height: 44px;
+  border: var(--line-w) solid var(--ink);
+  border-radius: var(--r-full);
+  cursor: pointer;
+  position: relative;
+  padding: 0;
+  transition: var(--t);
+}
+.swatch.on::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 14px;
+  height: 8px;
+  border-left: 3px solid #fff;
+  border-bottom: 3px solid #fff;
+  transform: rotate(-45deg) translate(2px, -3px);
+}
+
+/* ==========================================================================
+   Sheet 抽屉
+   ========================================================================== */
+.sheet {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  z-index: 900;
+  max-height: min(82vh, 82dvh);
+  display: flex;
+  flex-direction: column;
+  background: var(--paper-2);
+  border: var(--line-w) solid var(--ink);
+  border-bottom: 0;
+  border-radius: var(--r-xl) var(--r-xl) 0 0;
+  padding-bottom: max(var(--safe-b), 8px);
+  transform: translateY(100%);
+  visibility: hidden;
+  transition: transform .28s var(--ease), visibility .28s;
+}
+.sheet.on { transform: translateY(0); visibility: visible; }
+
+.sheet-grab {
+  flex: none;
+  padding: 12px 0 6px;
+  display: grid;
+  place-items: center;
+  cursor: grab;
+  touch-action: none;
+}
+.sheet-grab i {
+  width: 46px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--ink-3);
+  display: block;
+}
+.sheet-head {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--gap);
+  padding: var(--gap) var(--pad);
+  border-bottom: var(--line-w) solid var(--ink);
+}
+.sheet-title {
+  flex: 1 1 0;
+  min-width: 0;
+  font-family: var(--font-ui);
+  font-size: 1.5rem;
+  font-weight: var(--fw-strong);
+  text-align: center;
+}
+.sheet-hero {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--gap);
+  padding: var(--gap) var(--pad);
+  border-bottom: 2px solid var(--ink);
+  background: var(--paper-3);
+}
+.sheet-hero img {
+  width: 54px; height: 54px;
+  border-radius: var(--r-sm);
+  border: var(--line-w) solid var(--ink);
+  object-fit: cover;
+  flex: none;
+}
+.sheet-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  padding: var(--gap-s) 0;
+}
+.sheet-body::-webkit-scrollbar { width: 0; }
+.sheet-foot {
+  flex: none;
+  padding: var(--gap) var(--pad);
+  border-top: var(--line-w) solid var(--ink);
+}
+
+/* Sheet 条目 */
+.sitem {
+  display: flex;
+  align-items: center;
+  gap: var(--gap);
+  width: 100%;
+  min-height: 52px;
+  padding: var(--gap-s) var(--pad);
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font-size: .9375rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color .18s ease;
+}
+.sitem:active { background: var(--paper-3); }
+.sitem-txt { flex: 1 1 0; min-width: 0; }
+.sitem-sub { display: block; font-size: .75rem; color: var(--ink-3); margin-top: 2px; }
+.sitem.danger { color: #E5484D; }
+.sitem.on { color: var(--accent); }
+
+/* ==========================================================================
+   Toast / 遮罩 / 空态
+   ========================================================================== */
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, .45);
+  z-index: 940;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .22s ease, visibility .22s;
+}
+.scrim.on { opacity: 1; visibility: visible; }
+
+.toast {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--mini-h) + var(--tabbar-h) + var(--safe-b) + 16px);
+  transform: translateX(-50%) translateY(10px);
+  z-index: 1000;
+  max-width: 84%;
+  padding: 12px 18px;
+  border: var(--line-w) solid var(--ink);
+  border-radius: var(--r-full);
+  background: var(--paper-2);
+  color: var(--ink);
+  font-size: .8125rem;
+  text-align: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all .22s ease;
+}
+.toast.on { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap);
+  padding: 56px var(--pad);
+  text-align: center;
+  color: var(--ink-3);
+}
+.empty .svg { width: 56px; height: 56px; opacity: .35; stroke-width: 1.5; }
+
+.spinner {
+  width: 24px; height: 24px;
+  border: 3px solid var(--ink-3);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  flex: none;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.sr {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+[hidden] { display: none !important; }
+
+/* ==========================================================================
+   响应式（3 档够用，窄屏收紧、宽屏封顶、横屏切两栏）
+   ========================================================================== */
+@media (max-width: 360px) {
+  html { --pad: 16px; --row-h: 56px; }
+  .t-page { font-size: 1.75rem; }
+  .tab { font-size: .75rem; }
+}
+
+@media (min-width: 600px) {
+  html { --pad: 32px; }
+  .sheet { left: 50%; transform: translate(-50%, 100%); width: min(560px, 100%); border-radius: var(--r-xl); bottom: 16px; border-bottom: var(--line-w) solid var(--ink); }
+  .sheet.on { transform: translate(-50%, 0); }
+}
+
+/* 横屏：全屏播放页切两栏 */
+@media (orientation: landscape) and (max-height: 560px) {
+  .pp-inner { flex-direction: row; gap: 24px; }
+  .pp-stage { flex: 0 0 40%; height: 100%; }
+  .pp-side { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+}
+
+/* 减少动效 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+/* 连续圆角由 60-squircle-apply.js 以「超椭圆描边环背景」实现，
+   见该文件头部的方案说明。 */
+
+
+/* ===== 02-layout.css ===== */
+/* ==========================================================================
+   椰子音乐 4 · 02-layout.css
+   App 外壳 / 视图切换 / 顶栏 / 底部 Dock / 全屏播放页
+   --------------------------------------------------------------------------
+   结构：一根垂直 flex 链，高度全由令牌分配，零 JS 实测补偿
+       app(min-height:100dvh)
+         ├─ toolbar  (flex:none)
+         ├─ main     (flex:1, min-height:0)  ← 视图切换在这层
+         └─ dock     (flex:none)  ← MiniPlayer + Tab 栏
+   ========================================================================== */
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;      /* 降级链 */
+  min-height: 100dvh;
+  max-width: var(--content-max, 560px);
+  margin: 0 auto;
+  position: relative;
+  background: var(--paper);
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   .shell —— 内容列容器
+   --------------------------------------------------------------------------
+   【这里曾经漏了定义，是个真 bug】
+   .shell 是 .app 的 flex 子项，DOM 里常驻。若不给它 flex 属性：
+     · 窄屏下它变成普通块级元素 → 内部的 topbar/main/dock 全部脱离 flex 布局
+       → Tab 栏被顶到最上面、内容区塌成一片空白
+     · 只有 ≥840px 的媒体查询里定义了它，于是只有宽屏"看起来正常"
+   所以 .shell 必须在**基础样式**里定义，媒体查询里只做覆盖。
+   ========================================================================== */
+.shell {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* ==========================================================================
+   一、顶栏
+   ========================================================================== */
+.topbar {
+  flex: none;
+  padding-top: var(--safe-t);
+  background: var(--paper);
+  transition: background-color .3s ease;
+  z-index: 20;
+  position: relative;
+}
+
+.tb-row {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-s);
+  min-height: var(--topbar-h);
+  padding: 0 var(--pad);
+}
+
+.tb-title {
+  flex: 1 1 0;
+  min-width: 0;
+  font-family: var(--font-ui);
+  font-size: 2rem;
+  font-weight: var(--fw-strong);
+  line-height: 1.1;
+}
+
+.tb-acts {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-s);
+  flex: none;
+}
+
+/* 搜索行 */
+.tb-search {
+  padding: 0 var(--pad) var(--gap);
+  display: flex;
+  align-items: center;
+  gap: var(--gap-s);
+}
+.searchbox {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--gap-s);
+  height: 46px;
+  padding: 0 16px;
+  border: var(--line-w) solid var(--ink);
+  border-radius: var(--r-full);
+  background: var(--paper-2);
+  position: relative;
+}
+.searchbox input {
+  flex: 1 1 0;
+  min-width: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 1rem;
+  outline: none;
+  position: relative;
+  z-index: 2;
+}
+.searchbox input::placeholder { color: var(--ink-4); }
+.searchbox input::-webkit-search-cancel-button { display: none; }
+.searchbox .svg { position: relative; z-index: 2; flex: none; }
+
+/* ==========================================================================
+   二、主内容区 + 视图切换
+   ========================================================================== */
+.main {
+  flex: 1 1 auto;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.view {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--paper);
+  /* 显隐由 .view.on 的类 + JS 内联 visibility 共同控制。
+     这里**不要**再写 visibility:hidden —— 那会和 JS 的内联设置打架，
+     出现"DOM 有内容、切过去了却还是看不见"。 */
+  opacity: 0;
+  transform: translateX(4%);
+  transition: transform .26s var(--ease), opacity .22s ease, visibility .26s;
+}
+.view.on { opacity: 1; transform: translateX(0); }
+.view.left { transform: translateX(-4%); }
+
+.view-pad { padding: 0 var(--pad); }
+.pad-b {
+  height: calc(var(--mini-h) + var(--tabbar-h) + var(--safe-b) + var(--gap-xl));
+}
+
+/* 分区标题 + 手绘下划线 */
+.sec {
+  padding: var(--gap-xl) 0 var(--gap);
+  display: flex;
+  align-items: flex-end;
+  gap: var(--gap);
+}
+.sec-h {
+  font-family: var(--font-ui);
+  font-size: 1.5rem;
+  font-weight: var(--fw-strong);
+  line-height: 1;
+}
+.sec-more {
+  margin-left: auto;
+  font-size: .875rem;
+  color: var(--ink-2);
+  cursor: pointer;
+  border: 0;
+  background: none;
+  padding: 4px 0;
+  font-family: inherit;
+}
+
+/* ==========================================================================
+   分区按钮（2026-10-09 加）
+   --------------------------------------------------------------------------
+   用户反馈设置页的「外观」「播放」「关于」应该是按钮。
+   做法：做成手绘风格的胶囊按钮，取代原来纯文字的标题 ——
+   标题本身可点，点开对应分区；手绘感靠双线描边 + 略歪的旋转。
+   ========================================================================== */
+.sec-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gap-s);
+  min-height: 44px;
+  padding: 0 20px;
+  margin-bottom: var(--gap-s);
+  border: var(--line-w) solid var(--ink);
+  border-radius: var(--r-full);
+  background: var(--paper-2);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 1.125rem;
+  font-weight: var(--fw-strong);
+  cursor: pointer;
+  transition: var(--t);
+}
+.sec-btn:active { transform: scale(.96); }
+.sec-btn .svg { width: 20px; height: 20px; }
+.sec-btn .cnt {
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: var(--r-full);
+  background: var(--accent);
+  border: var(--line-w) solid var(--ink);
+  color: #fff;
+  font-size: .75rem;
+  font-weight: var(--fw);
+  display: grid;
+  place-items: center;
+  line-height: 1;
+}
+html[data-skin="dark"] .sec-btn .cnt,
+html[data-skin="neon"] .sec-btn .cnt { color: var(--paper); }
+
+/* 分组内容：默认收起，点分区按钮才展开
+   【踩坑记录】先试过 max-height:0+overflow:hidden，
+   又试过 grid-template-rows:0fr→1fr，
+   两种做法都会把里面的 .card 压成 0 高（.card 是 position:relative，
+   高度完全由内容撑，而折叠容器把内容区可视高度限制成 0）。
+   最后用最朴素的 display 切换 —— 收起时彻底不渲染，展开时正常显示。
+   要动画就在内容上加 opacity/transform，不在容器上做高度动画。 */
+.sec-body {
+  display: none;
+}
+.sec-body.open {
+  display: block;
+  animation: secIn .26s var(--ease);
+}
+@keyframes secIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+/* 收起时留出底部呼吸，不贴下一个分区 */
+.sec-group { margin-bottom: var(--gap); }
+
+/* ==========================================================================
+   三、底部 Dock
+   ========================================================================== */
+.dock {
+  flex: none;
+  z-index: 40;
+  background: var(--paper);
+  padding-bottom: var(--safe-b);
+}
+
+/* ---------- MiniPlayer ---------- */
+.mini {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-s);
+  height: var(--mini-h);
+  margin: 0 var(--pad) var(--gap-s);
+  padding: 0 10px;
+  position: relative;
+  background: var(--paper-2);
+  border: var(--line-w) solid var(--ink);
+  border-radius: var(--r-lg);
+  cursor: pointer;
+  overflow: hidden;
+}
+.mini-cover {
+  width: 42px; height: 42px;
+  border-radius: var(--r-sm);
+  border: var(--line-w) solid var(--ink);
+  object-fit: cover;
+  flex: none;
+  background: var(--paper-3);
+}
+.mini-meta {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  position: relative;
+  z-index: 2;
+}
+.mini-title {
+  font-family: var(--font-ui);
+  font-size: 1.25rem;
+  font-weight: var(--fw-strong);
+  line-height: 1.1;
+}
+.mini-artist { font-size: .75rem; color: var(--ink-3); line-height: 1.2; }
+.mini-lyric { font-size: .6875rem; color: var(--accent); line-height: 1.2; }
+.mini-acts { display: flex; align-items: center; gap: 6px; flex: none; position: relative; z-index: 2; }
+/* 播放进度条
+   【修】原来 bottom:6px，2.5px 描边的内沿正好在bottom:5px，
+   进度条压在描边上 → 视觉重叠。
+   改成 bottom:7px（描边内沿 +2px），并给轨道加一条底槽，
+   这样进度条与描边之间有明确留白，不会糊在一起。 */
+.mini-prog {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 7px;
+  height: 5px;
+  border-radius: 3px;
+  background: transparent;
+  width: auto;
+  z-index: 3;
+  /* 底槽：整条都可见，未播放部分是浅色轨道 */
+  box-shadow: inset 0 0 0 99px var(--line-track, rgba(43, 43, 43, .1));
+  pointer-events: none;
+}
+/* 已播放部分用 --w 宽度叠加，靠 background-size 裁出 */
+.mini-prog::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: var(--p, 0%);
+  border-radius: 3px;
+  background: var(--accent);
+}
+
+/* 收起态 */
+.app[data-mini="off"] .mini {
+  height: 0;
+  margin-bottom: 0;
+  padding: 0;
+  border-width: 0;
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
+  transition: height .24s var(--ease), opacity .2s, margin .24s var(--ease);
+}
+
+/* ---------- Tab 栏 ---------- */
+.tabbar {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  height: var(--tabbar-h);
+  margin: 0 var(--pad);
+  padding: 0 4px;
+  background: var(--paper-2);
+  border: var(--line-w) solid var(--ink);
+  border-radius: var(--r-xl);
+  position: relative;
+  /* 5 个 Tab 在 393px 下必须放得下：强制 flex:1 + min-width:0，
+     否则文字撑破会把「我的」挤出屏幕。 */
+  min-width: 0;
+}
+
+.tab {
+  flex: 1 1 0;
+  min-width: 0;              /* 关键：没有这句，文字会把容器撑破 */
+  height: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* 【修】原来 gap:1px + line-height:1.15，
+     文字盒比视觉重心高 → 「首页」等字微微往上压线。
+     改用「图标 + 文字各占一半」的显式分配：
+     gap 略加到 3px，文字给固定 line-height 并微降 baseline。 */
+  gap: 3px;
+  border: var(--line-w) solid transparent;
+  border-radius: var(--r-full);
+  background: none;
+  color: var(--ink-4);
+  font-family: inherit;
+  font-size: .75rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+  overflow: hidden;
+  transition: var(--t);
+  position: relative;
+  z-index: 2;
+}
+.tab .svg { width: 21px; height: 21px; flex: none; }
+.tab span {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  /* 【修】文字盒按line-height 精确居中，
+     再上移 1px 抵消中文视觉重心偏下的习惯。
+     不加这句时「首页/搜索」会微微往上压线。 */
+  line-height: 14px;
+  display: block;
+  transform: translateY(1px);
+}
+.tab.on {
+  background: var(--accent);
+  border-color: var(--ink);
+  color: #fff;
+}
+html[data-skin="dark"] .tab.on,
+html[data-skin="neon"] .tab.on { color: var(--paper); }
+.tab:active { transform: scale(.92); }
+
+.tab .dot {
+  position: absolute;
+  top: 4px;
+  right: 12px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--accent-2);
+  border: var(--line-w) solid var(--ink);
+}
+
+/* ==========================================================================
+   四、全屏播放页
+   --------------------------------------------------------------------------
+   高度预算（永不压叠）：
+     head(52) → stage(flex:1,min-height:0) → info/lyric/prog/ctl/acts 固定
+   封面用 aspect-ratio + max-height 双重约束，任何视口都不溢出
+   ========================================================================== */
+.ppage {
+  position: absolute;
+  inset: 0;
+  z-index: 970;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(3%);
+  transition: transform .3s var(--ease), opacity .24s ease, visibility .3s;
+  overflow: hidden;
+}
+.ppage.on { visibility: visible; opacity: 1; transform: translateY(0); }
+
+.pp-inner {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: var(--safe-t) var(--pad) max(var(--safe-b), var(--gap));
+}
+
+.pp-head {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--gap-s);
+  min-height: 52px;
+}
+.pp-head-txt { flex: 1 1 0; min-width: 0; text-align: center; }
+.pp-src {
+  font-family: var(--font-ui);
+  font-size: 1.125rem;
+  font-weight: var(--fw-strong);
+  line-height: 1.2;
+}
+.pp-srcsub { font-size: .6875rem; color: var(--ink-3); line-height: 1.2; }
+
+.pp-stage {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--gap) 0;
+}
+.pp-disc {
+  position: relative;
+  aspect-ratio: 1;
+  width: min(100%, 340px);
+  max-height: 100%;
+  border-radius: var(--r-lg);
+  border: var(--line-w) solid var(--ink);
+  overflow: hidden;
+  background: var(--paper-3);
+}
+.pp-cover {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* 信息 */
+.pp-info {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--gap);
+  padding: var(--gap) 0;
+}
+.pp-tblock { flex: 1 1 0; min-width: 0; }
+.pp-title {
+  font-family: var(--font-ui);
+  font-size: 2rem;
+  font-weight: var(--fw-strong);
+  line-height: 1.1;
+}
+.pp-artist { font-size: .9375rem; color: var(--ink-3); margin-top: 2px; }
+
+/* 歌词 */
+.pp-lyricbox {
+  flex: 0 1 auto;
+  min-height: 0;
+  max-height: 92px;
+  overflow: hidden;
+  position: relative;
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 25%, #000 75%, transparent);
+  mask-image: linear-gradient(180deg, transparent, #000 25%, #000 75%, transparent);
+}
+.pp-lyric {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: transform .3s var(--ease);
+  padding: 8px 0;
+}
+.pp-lyric-line {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--ink-4);
+  transition: color .2s ease, transform .2s var(--ease);
+}
+.pp-lyric-line.on { color: var(--ink); font-weight: var(--fw-strong); transform: scale(1.02); }
+.pp-lyric-msg {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-s);
+  font-size: .8125rem;
+  color: var(--ink-4);
+  padding: 8px 0;
+}
+
+/* 进度条 */
+.pp-prog {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--gap-s);
+  padding: var(--gap) 0 var(--gap-s);
+}
+.pp-time { flex: none; font-size: .75rem; color: var(--ink-3); font-variant-numeric: tabular-nums; min-width: 38px; }
+.pp-time:last-child { text-align: right; }
+.pp-track {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--paper-3);
+  border: var(--line-w) solid var(--ink);
+  position: relative;
+  cursor: pointer;
+  touch-action: none;
+}
+.pp-fill {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: var(--p, 0%);
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+/* 控制 */
+.pp-ctl {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap-l);
+  padding: var(--gap) 0;
+}
+.pp-ico {
+  width: var(--sz-icon-lg);
+  height: var(--sz-icon-lg);
+  min-width: var(--sz-icon-lg);
+  min-height: var(--sz-icon-lg);
+  border: 0;
+  background: none;
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  border-radius: var(--r-full);
+  transition: var(--t);
+}
+.pp-ico:active { transform: scale(.88); }
+.pp-ico .svg { width: 30px; height: 30px; }
+
+/* 动作行 */
+.pp-acts {
+  flex: none;
+  display: flex;
+  gap: var(--gap-s);
+  justify-content: center;
+  padding-top: var(--gap-s);
+}
+.pp-act {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 2px;
+  min-height: var(--sz-icon);
+  border: 0;
+  background: none;
+  color: var(--ink-3);
+  font-family: inherit;
+  font-size: .6875rem;
+  cursor: pointer;
+  border-radius: var(--r-sm);
+  transition: var(--t);
+}
+.pp-act:active { transform: scale(.94); background: var(--paper-3); }
+.pp-act.on { color: var(--accent); }
+.pp-act .svg { width: 22px; height: 22px; }
+
+/* ==========================================================================
+   五、窄屏 / 宽屏
+   ========================================================================== */
+@media (min-width: 840px) {
+  .app { flex-direction: row; max-width: none; }
+  .tabbar {
+    order: -1;
+    flex-direction: column;
+    width: 92px;
+    height: auto;
+    margin: var(--pad) 0;
+    align-items: stretch;
+    padding: 10px 6px;
+    gap: 6px;
+  }
+  .tab { flex: none; height: 64px; }
+  .shell {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  .pad-b { height: calc(var(--mini-h) + var(--safe-b) + var(--gap-xl)); }
+  .dock { border-top: 0; }
+}
+
+</style>
+</head>
+
+<body>
+  <div class="app" id="app" data-mini="on">
+
+    <div class="shell" id="shell">
+
+      <!-- ============ 顶栏 ============ -->
+      <header class="topbar" id="topbar">
+        <div class="tb-row">
+          <div class="tb-title trunc" id="tbTitle">椰子音乐</div>
+          <div class="tb-acts">
+            <button class="ibtn sm" id="themeBtn" aria-label="切换外观">
+              <svg class="svg svg-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6L19 19M19 5l-1.4 1.4M6.4 17.6L5 19"/></svg>
+            </button>
+            <button class="ibtn sm" id="setBtn" aria-label="设置">
+              <svg class="svg svg-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M6 6l2 2M16 16l2 2M18 6l-2 2M8 16l-2 2"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- 搜索行（独立 Tab 之外也随时可搜） -->
+        <div class="tb-search" id="tbSearch">
+          <div class="searchbox">
+            <svg class="svg svg-sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+            <input id="searchInput" type="search" placeholder="搜歌名、歌手、UP主"
+                   autocomplete="off" enterkeyhint="search" aria-label="搜索">
+          </div>
+        </div>
+      </header>
+
+      <!-- ============ 内容区 ============ -->
+      <main class="main" id="main">
+
+        <!-- ---------- 首页 ---------- -->
+        <section class="view on" id="viewHome">
+          <div class="scroll">
+            <div class="view-pad">
+
+              <!-- 正在播放大卡 -->
+              <div class="card sketch" id="homeNow" style="margin-top:var(--gap);display:none">
+                <div style="display:flex;gap:var(--gap);padding:14px;align-items:center">
+                  <img id="homeNowCov" class="srow-cover" style="width:88px;height:88px" src="" alt="">
+                  <div style="flex:1 1 0;min-width:0">
+                    <div class="t-cap" style="color:var(--accent);margin-bottom:2px">正在播放</div>
+                    <div class="hand trunc" style="font-size:1.375rem" id="homeNowT">未在播放</div>
+                    <div class="t-artist trunc" id="homeNowA">—</div>
+                  </div>
+                  <button class="ibtn lg fill" id="homeNowPlay" aria-label="播放">
+                    <svg class="svg svg-fill" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- 我的音乐：四入口 -->
+              <div class="sec"><span class="sec-h">我的音乐</span></div>
+              <div id="homeGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)"></div>
+
+              <!-- 自建歌单 -->
+              <div class="sec">
+                <span class="sec-h">自建歌单</span>
+                <button class="sec-more" id="addPlBtn">＋ 新建</button>
+              </div>
+              <div class="scroll-x" style="padding-bottom:var(--gap)">
+                <div id="plGrid" style="display:flex;gap:var(--gap)"></div>
+              </div>
+
+              <div class="pad-b"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ---------- 搜索 ---------- -->
+        <section class="view" id="viewSearch" style="visibility:hidden">
+          <div class="scroll">
+            <div class="view-pad">
+              <div id="searchBanner"></div>
+              <div class="sec" id="histSec">
+                <span class="sec-h">最近搜过</span>
+                <button class="sec-more" id="histClear">清空</button>
+              </div>
+              <div id="histChips" style="display:flex;flex-wrap:wrap;gap:var(--gap-s);padding-bottom:var(--gap)"></div>
+              <div id="searchBody"></div>
+              <div class="pad-b"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ---------- 通用列表 ---------- -->
+        <section class="view" id="viewList" style="visibility:hidden">
+          <div class="scroll">
+            <div class="view-pad">
+              <div style="display:flex;gap:var(--gap);align-items:center;padding:var(--gap) 0">
+                <img id="listCover" class="srow-cover" style="width:76px;height:76px;border-radius:var(--r-md)" src="" alt="">
+                <div style="flex:1 1 0;min-width:0">
+                  <div class="hand trunc" style="font-size:1.5rem" id="listTitle">列表</div>
+                  <div class="t-artist" id="listSub"></div>
+                </div>
+                <button class="ibtn fill" id="listPlayAll" aria-label="播放全部">
+                  <svg class="svg svg-fill" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </button>
+                <button class="ibtn" id="listMore" aria-label="更多">
+                  <svg class="svg" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.6" class="svg-fill"/><circle cx="12" cy="12" r="1.6" class="svg-fill"/><circle cx="12" cy="19" r="1.6" class="svg-fill"/></svg>
+                </button>
+              </div>
+
+              <div id="songList" style="display:flex;flex-direction:column;gap:4px"></div>
+              <div id="songFoot"></div>
+              <div class="pad-b"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ---------- 导入 ---------- -->
+        <section class="view" id="viewImport" style="visibility:hidden">
+          <div class="scroll">
+            <div class="view-pad">
+              <div id="importBanner" style="margin-top:var(--gap)"></div>
+
+              <div class="card sketch" style="margin-top:var(--gap);padding:var(--pad)">
+                <div class="hand" style="font-size:1.5rem">导入歌单</div>
+                <p class="t-cap" style="margin-top:4px">粘贴链接，或选朋友发来的 TXT 文件</p>
+
+                <div class="searchbox" style="margin-top:var(--gap)">
+                  <input id="impInput" placeholder="粘贴 外部歌单 / 某弹幕网站 链接" autocomplete="off"
+                         enterkeyhint="go" aria-label="导入链接">
+                </div>
+
+                <div style="display:flex;gap:var(--gap-s);margin-top:var(--gap)">
+                  <button class="btn btn-fill" style="flex:1" id="impBtn">开始导入</button>
+                  <button class="btn" style="flex:none" id="pickTxtBtn">选 TXT</button>
+                </div>
+
+                <div id="impProgWrap" style="margin-top:var(--gap);display:none">
+                  <div style="height:8px;border:var(--line-w) solid var(--ink);border-radius:4px;overflow:hidden;background:var(--paper-3)">
+                    <div id="impProg" style="height:100%;width:var(--p,0%);background:var(--accent)"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card" style="margin-top:var(--gap);padding:var(--pad);background:var(--paper-3)">
+                <div class="t-cap" style="font-weight:700;margin-bottom:8px">链接从哪来？</div>
+                <div class="t-cap" style="line-height:1.9">
+                  <b>某音乐平台</b>：歌单页 → 分享 → 复制链接<br>
+                  <b>某弹幕网站</b>：视频/收藏夹 → 分享 → 复制链接<br>
+                  <b>朋友分享</b>：收到 TXT 后点「选 TXT」<br>
+                  <span style="opacity:.6">导入很快；音源在首次播放时自动匹配</span>
+                </div>
+              </div>
+
+              <div id="impResult" style="margin-top:var(--gap)"></div>
+              <div class="pad-b"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ---------- 我的 ---------- -->
+        <section class="view" id="viewSettings" style="visibility:hidden">
+          <div class="scroll">
+            <div class="view-pad">
+              <!-- 账号 -->
+              <div class="card sketch card-btn" id="userCard" style="margin-top:var(--gap);padding:var(--pad);display:flex;align-items:center;gap:var(--gap)">
+                <div style="width:52px;height:52px;border-radius:50%;border:var(--line-w) solid var(--ink);display:grid;place-items:center;flex:none;background:var(--accent-soft)">
+                  <svg class="svg" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z"/></svg>
+                </div>
+                <div style="flex:1 1 0;min-width:0">
+                  <div class="hand trunc" style="font-size:1.25rem" id="uName">未登录</div>
+                  <div class="t-cap trunc" id="uSub">登录后可同步 某弹幕网站收藏</div>
+                </div>
+                <button class="btn btn-sm" id="loginBtn">登录</button>
+              </div>
+
+              <!-- 分区按钮：手绘风格，点标题展开/收起 -->
+              <div class="sec-group">
+                <button class="sec-btn" data-sec="set" aria-expanded="true">
+                  <svg class="svg" viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0 0 18c1 0 1.7-.8 1.7-1.7 0-.5-.2-.9-.5-1.3-.3-.3-.5-.7-.5-1.2 0-.9.8-1.7 1.7-1.7H16a5 5 0 0 0 5-5c0-4-4-7.1-9-7.1z"/><circle cx="7.5" cy="11" r="1" class="svg-fill"/><circle cx="10" cy="7" r="1" class="svg-fill"/><circle cx="15" cy="8" r="1" class="svg-fill"/></svg>
+                  <span>外观</span>
+                </button>
+                <div class="sec-body open" id="secSet"><div class="card" id="setRows"></div></div>
+              </div>
+
+              <div class="sec-group">
+                <button class="sec-btn" data-sec="play" aria-expanded="true">
+                  <svg class="svg" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2z"/></svg>
+                  <span>播放</span>
+                </button>
+                <div class="sec-body open" id="secPlay"><div class="card" id="playRows"></div></div>
+              </div>
+
+              <div class="sec-group">
+                <button class="sec-btn" data-sec="about" aria-expanded="true">
+                  <svg class="svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+                  <span>关于</span>
+                </button>
+                <div class="sec-body open" id="secAbout"><div class="card" id="aboutRows"></div></div>
+              </div>
+
+              <div class="pad-b"></div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- ============ Dock ============ -->
+      <div class="dock" id="dock">
+        <!-- MiniPlayer -->
+        <div class="mini" id="mini" data-state="idle" role="button" tabindex="0" aria-label="迷你播放器">
+          <img class="mini-cover" id="miniCov" src="" alt="">
+          <div class="mini-meta">
+            <div class="mini-title trunc" id="miniT">未在播放</div>
+            <div class="mini-artist trunc" id="miniA">—</div>
+            <div class="mini-lyric trunc" id="miniLyric"></div>
+          </div>
+          <div class="mini-acts">
+            <button class="ibtn sm" id="miniFav" aria-label="收藏">
+              <svg class="svg svg-sm" viewBox="0 0 24 24"><path d="M12 20.5S4 15.5 4 10a4.5 4.5 0 0 1 8-2.5A4.5 4.5 0 0 1 20 10c0 5.5-8 10.5-8 10.5z"/></svg>
+            </button>
+            <button class="ibtn sm fill" id="miniPlay" aria-label="播放/暂停">
+              <svg class="svg svg-sm svg-fill" id="miniPlayIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+          </div>
+          <i class="mini-prog" id="miniProg"></i>
+        </div>
+
+        <!-- ============ Tab 栏 ============
+             必须放在 .dock 内部。之前它挂在 .app 下、.shell 外面，
+             窄屏时不在 shell 的 flex 流里 → 跑不到底部，dock 只剩 mini。 -->
+        <nav class="tabbar" id="tabbar" aria-label="主导航">
+          <button class="tab on" data-view="home">
+            <svg class="svg svg-fill" viewBox="0 0 24 24"><path d="M12 3 2 12h3v8h6v-6h2v6h6v-8h3z"/></svg>
+            <span>首页</span>
+          </button>
+          <button class="tab" data-view="search">
+            <svg class="svg" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+            <span>搜索</span>
+          </button>
+          <button class="tab" data-view="fav">
+            <svg class="svg" viewBox="0 0 24 24"><path d="M12 20.5S4 15.5 4 10a4.5 4.5 0 0 1 8-2.5A4.5 4.5 0 0 1 20 10c0 5.5-8 10.5-8 10.5z"/></svg>
+            <span>喜欢</span>
+          </button>
+          <button class="tab" data-view="import">
+            <svg class="svg" viewBox="0 0 24 24"><path d="M12 4v11M8 11l4 4 4-4"/><path d="M4 19h16"/></svg>
+            <span>导入</span>
+            <i class="dot" id="tabDot" hidden></i>
+          </button>
+          <button class="tab" data-view="settings">
+            <svg class="svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5 5l2.2 2.2M16.8 16.8L19 19M19 5l-2.2 2.2M7.2 16.8L5 19"/></svg>
+            <span>我的</span>
+          </button>
+        </nav>
+      </div>
+    </div>
+
+    <!-- ============ 遮罩 ============ -->
+    <div class="scrim" id="scrim"></div>
+
+    <!-- ============ Sheet ============ -->
+    <div class="sheet" id="sheet" role="dialog" aria-modal="true">
+      <div class="sheet-grab" id="sheetGrab"><i></i></div>
+      <div class="sheet-head">
+        <span style="width:44px;flex:none"></span>
+        <span class="sheet-title trunc" id="sheetTitle">操作</span>
+        <button class="ibtn sm" id="sheetClose" aria-label="关闭">
+          <svg class="svg svg-sm" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <div class="sheet-hero" id="sheetHero" hidden></div>
+      <div class="sheet-body" id="sheetBody"></div>
+      <div class="sheet-foot" id="sheetFoot" hidden></div>
+    </div>
+
+    <!-- ============ 全屏播放页 ============ -->
+    <div class="ppage" id="ppage" data-state="idle" role="dialog" aria-modal="true" aria-label="播放页">
+      <div class="pp-inner">
+        <div class="pp-head">
+          <button class="ibtn sm" id="ppDown" aria-label="收起">
+            <svg class="svg svg-sm" viewBox="0 0 24 24"><path d="M6 10l6 6 6-6"/></svg>
+          </button>
+          <div class="pp-head-txt">
+            <div class="pp-src trunc" id="ppSrc">正在播放</div>
+            <div class="pp-srcsub trunc" id="ppSrcSub">—</div>
+          </div>
+          <button class="ibtn sm" id="ppMode" aria-label="播放模式">
+            <svg class="svg svg-sm" id="ppModeIcon" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2z"/></svg>
+          </button>
+        </div>
+
+        <div class="pp-stage">
+          <div class="pp-disc">
+            <img class="pp-cover" id="ppCover" src="" alt="">
+          </div>
+        </div>
+
+        <div class="pp-side">
+          <div class="pp-info">
+            <div class="pp-tblock">
+              <div class="pp-title trunc" id="ppTitle">未在播放</div>
+              <div class="pp-artist trunc" id="ppArtist">—</div>
+            </div>
+            <button class="ibtn" id="ppFav" aria-label="收藏">
+              <svg class="svg" viewBox="0 0 24 24"><path d="M12 20.5S4 15.5 4 10a4.5 4.5 0 0 1 8-2.5A4.5 4.5 0 0 1 20 10c0 5.5-8 10.5-8 10.5z"/></svg>
+            </button>
+          </div>
+
+          <div class="pp-lyricbox">
+            <div class="pp-lyric" id="ppLyric">
+              <div class="pp-lyric-msg"><div class="spinner"></div>歌词加载中…</div>
+            </div>
+          </div>
+
+          <div class="pp-prog">
+            <span class="pp-time" id="ppCur">0:00</span>
+            <div class="pp-track" id="ppTrack" role="slider" aria-label="进度" tabindex="0"
+                 aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <i class="pp-fill" id="ppFill"></i>
+            </div>
+            <span class="pp-time" id="ppDur">0:00</span>
+          </div>
+
+          <div class="pp-ctl">
+            <button class="pp-ico" id="ppPrev" aria-label="上一首">
+              <svg class="svg svg-fill" viewBox="0 0 24 24"><path d="M6 6h2.5v12H6zM19 6v12l-9-6z"/></svg>
+            </button>
+            <button class="ibtn xl fill" id="ppPlay" aria-label="播放/暂停">
+              <svg class="svg svg-lg svg-fill" id="ppPlayIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <button class="pp-ico" id="ppNext" aria-label="下一首">
+              <svg class="svg svg-fill" viewBox="0 0 24 24"><path d="M15.5 6H18v12h-2.5zM5 6v12l9-6z"/></svg>
+            </button>
+          </div>
+
+          <div class="pp-acts">
+            <button class="pp-act" id="ppDownload">
+              <svg class="svg" viewBox="0 0 24 24"><path d="M12 4v11M8 11l4 4 4-4"/><path d="M4 19h16"/></svg>
+              <span>下载</span>
+            </button>
+            <button class="pp-act" id="ppAdd">
+              <svg class="svg" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+              <span>加入</span>
+            </button>
+            <button class="pp-act" id="ppLoud">
+              <svg class="svg" viewBox="0 0 24 24"><path d="M4 9v6h3l5 4V5L7 9z"/><path d="M16 9.5a3.5 3.5 0 0 1 0 5"/></svg>
+              <span>响度</span>
+            </button>
+            <button class="pp-act" id="ppSwap">
+              <svg class="svg" viewBox="0 0 24 24"><path d="M4 8h13M14 5l3 3-3 3M20 16H7M10 13l-3 3 3 3"/></svg>
+              <span>换源</span>
+            </button>
+            <button class="pp-act" id="ppQueue">
+              <svg class="svg" viewBox="0 0 24 24"><path d="M4 6h11M4 11h11M4 16h7"/><circle cx="18" cy="15" r="2.5"/></svg>
+              <span>队列</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ Toast ============ -->
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </div>
+
+<script>
+/* ==========================================================================
+   MOCK 数据层 —— 只在「浏览器预览测试」时启用
+   --------------------------------------------------------------------------
+   APK 里 window.Native 由原生注入，这里换成 mock，
+   这样手机浏览器打开也能看到完整界面、点得动、能截图反馈问题。
+   业务代码一行没改，测的就是真代码。
+   ========================================================================== */
+(function () {
+  var M = { playQueue:0, toggle:0, seek:0, next:0, prev:0, logs:[] };
+
+  var SONGS = [
+    { bvid:'BV1aW411A7Ac', cid:112345, title:'起风了', artist:'买辣椒也用券',
+      cover:'', duration:323, owner:'音乐搬运工', play:8230000, danmaku:12000, favorites:45000, score:92 },
+    { bvid:'BV1yZ4y1k7Pq', cid:112346, title:'晴天', artist:'周杰伦',
+      cover:'', duration:269, owner:'JayOfficial', play:12800000, danmaku:34000, favorites:210000, score:97 },
+    { bvid:'BV1rZ4y1k8Lm', cid:112347, title:'青花瓷', artist:'周杰伦',
+      cover:'', duration:239, owner:'JayOfficial', play:9600000, danmaku:28000, favorites:180000, score:95 },
+    { bvid:'BV1tR4y1k9Nn', cid:112348, title:'夜曲', artist:'周杰伦',
+      cover:'', duration:213, owner:'JayOfficial', play:7400000, danmaku:21000, favorites:150000, score:94 },
+    { bvid:'BV1yR4y1k0Oo', cid:112349, title:'稻香', artist:'周杰伦',
+      cover:'', duration:223, owner:'JayOfficial', play:6100000, danmaku:19000, favorites:130000, score:93 },
+    { bvid:'mp_88123456', cid:0, title:'海阔天空', artist:'Beyond', unmatched:true,
+      cover:'', duration:326, owner:'', play:0, danmaku:0, favorites:0, score:0 },
+    { bvid:'BV1kR4y1k1Pp', cid:112350, title:'稻香（Live版·现场演唱会超长版）',
+      artist:'周杰伦', cover:'', duration:598, owner:'某UP主', play:120000, danmaku:3400, favorites:8900, score:61 },
+    { bvid:'BV1mR4y1k2Ab', cid:112351, title:'夜曲', artist:'周杰伦',
+      cover:'', duration:213, owner:'JayOfficial', play:7400000, danmaku:21000, favorites:150000, score:94 },
+  ];
+
+  var PLS = [
+    { id:'fav', name:'我喜欢的音乐', fixed:true, songs:SONGS.slice(0,5) },
+    { id:'p1', name:'通勤路上', songs:SONGS.slice(0,6) },
+    { id:'p2', name:'睡前放松', songs:SONGS.slice(2,8) },
+    { id:'p3', name:'燃脂节奏', songs:SONGS.slice(0,3) },
+  ];
+
+  var SEED = 0;
+  /* 封面：用内联 SVG data URI，不依赖网络。
+     【为什么不外链图片】业务代码的 coverUrl() 会拼 某弹幕网站的尺寸后缀
+     （@200w_113h_1c.webp），套在别的域名上必然坏图；
+     而真机上原生返回的本来就是 某弹幕网站地址，不走这条路径。
+     所以 Mock 侧改用 data URI，绕开拼参数这一步。 */
+  function cover(seed) {
+    var h = (seed * 67) % 360;
+    var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400">' +
+      '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">' +
+      '<stop offset="0" stop-color="hsl(' + h + ',62%,58%)"/>' +
+      '<stop offset="1" stop-color="hsl(' + ((h + 48) % 360) + ',58%,36%)"/>' +
+      '</linearGradient></defs>' +
+      '<rect width="400" height="400" fill="url(#g)"/>' +
+      '<circle cx="200" cy="200" r="76" fill="none" stroke="rgba(255,255,255,.65)" stroke-width="7" stroke-dasharray="18 14"/>' +
+      '<circle cx="200" cy="200" r="22" fill="rgba(255,255,255,.9)"/>' +
+      '</svg>';
+    return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  }
+  SONGS.forEach(function (s, i) { s.cover = cover(i + 1); });
+
+  function log() {
+    M.logs.push(Array.prototype.join.call(arguments, ' '));
+  }
+
+  window.Native = {
+    /* ---- 资料库 ---- */
+    getPlaylists:  function () { return JSON.stringify(PLS); },
+    getFavorites:  function () { return JSON.stringify(PLS[0].songs); },
+    getHistory:    function () { return JSON.stringify(PLS[0].songs.slice(0,4)); },
+    getDownloads:  function () { return JSON.stringify(PLS[1].songs.slice(0,2)); },
+    createPlaylist: function (n) { var p={id:'p'+(PLS.length),name:n,songs:[]}; PLS.push(p); return JSON.stringify(p); },
+    renamePlaylist: function (id,n) { PLS.forEach(function(p){ if(p.id===id) p.name=n; }); },
+    deletePlaylist: function (id) { var i=PLS.findIndex(function(p){return p.id===id;}); if(i>0) PLS.splice(i,1); return true; },
+    addToPlaylist: function (id,s) { var p=PLS.find(function(x){return x.id===id;}); if(p){ try{p.songs.push(JSON.parse(s));}catch(e){} } return true; },
+    addSongsToPlaylist: function (id,a) { var p=PLS.find(function(x){return x.id===id;}); if(p){ JSON.parse(a).forEach(function(s){p.songs.push(s);}); } return 3; },
+    removeSongAt: function () { return true; },
+    removeSongFromPlaylist: function () { return true; },
+    isFavorite: function (b) { return PLS[0].songs.some(function(s){return s.bvid===b;}); },
+    toggleFavorite: function (s) {
+      var t = JSON.parse(s);
+      var arr = PLS[0].songs, i = arr.findIndex(function(x){return x.bvid===t.bvid;});
+      if (i>=0) arr.splice(i,1); else arr.unshift(t);
+      return i<0;
+    },
+    getSettings: function () {
+      return JSON.stringify({ skin:'paper', accent:'#FF6B4A', fontsize:'m',
+        density:'n', playMode:'list', loudness:false,
+        downloadDir:'/storage/emulated/0/Music/椰子音乐' });
+    },
+    setSetting: function () { return null; },
+    getQueue: function () { return JSON.stringify(SONGS.slice(0,3)); },
+    getUname: function () { return JSON.stringify({logged_in:false,uname:''}); },
+
+    /* ---- 播放（模拟）---- */
+    playQueue: function (json, idx) {
+      log('playQueue  idx=' + idx);
+      M.playQueue++;
+      var arr = JSON.parse(json);
+      CN.S.queue = arr;
+      CN.S.qIndex = idx;
+      CN.S.track = arr[idx];
+      CN.S.cur = 68; CN.S.dur = arr[idx].duration || 300;
+      window.__native.onTrack(arr[idx]);
+      setTimeout(function(){ window.__native.onState('playing'); }, 60);
+    },
+    toggle: function () {
+      M.toggle++;
+      var s = CN.S.state === 'playing' ? 'paused' : 'playing';
+      window.__native.onState(s);
+    },
+    next: function () {
+      M.next++;
+      var i = CN.S.qIndex + 1;
+      if (i >= CN.S.queue.length) i = 0;
+      CN.S.qIndex = i; CN.S.track = CN.S.queue[i];
+      CN.S.cur = 0;
+      window.__native.onTrack(CN.S.track);
+      window.__native.onState('playing');
+    },
+    prev: function () { M.prev++; window.__native.onState('paused'); },
+    seek: function (s) { log('seek ' + Math.round(s) + 's'); CN.S.cur = s; window.__native.onProgress({cur:s,dur:CN.S.dur}); },
+    nextMode: function () { return 'list'; },
+    setLoudness: function (on) { log('setLoudness ' + on); },
+
+    /* ---- 换源 / 下载 / 导入 ---- */
+    swapSongSource: function (oldBvid, kw) {
+      log('swapSongSource ' + kw);
+      return JSON.stringify({ bvid:'BV1swapped99', cid:999, title:'起风了',
+        artist:'买辣椒也用券', cover:SONGS[0].cover, duration:323,
+        owner:'新匹配到的UP主', play:52000, danmaku:860, favorites:2300, score:88 });
+    },
+    download: function (s) { log('download ' + JSON.parse(s).title); },
+    getDownloadDir: function () { return '/storage/emulated/0/Music/椰子音乐'; },
+    getDownloads: function () { return JSON.stringify(PLS[1].songs.slice(0,2)); },
+    importLink: function (i) { log('importLink ' + i); },
+    importMusicPlaylist: function (i) {
+      log('importMusicPlaylist ' + i);
+      /* 模拟导入进度，让 UI 的进度条能被看到 */
+      var cur = 0, total = 32;
+      var t = setInterval(function () {
+        cur += 4;
+        window.__native.onMusicProgress(cur, total);
+        if (cur >= total) {
+          clearInterval(t);
+          window.__native.onMusicImport({ ok:true, count:total });
+        }
+      }, 220);
+    },
+    pickTxtFile: function () { log('pickTxtFile'); },
+
+    /* ---- 系统 ---- */
+    copyText: function (t) { log('copyText ' + t.slice(0,20)); if (navigator.clipboard) navigator.clipboard.writeText(t).catch(function(){}); },
+    getClipboard: function () { return ''; },
+    openUrl: function (u) { log('openUrl ' + u); },
+    setStatusBarColor: function () {},
+    openLogin: function () { log('openLogin'); },
+    logout: function () { log('logout'); },
+    recheckLogin: function () { log('recheckLogin'); },
+    hasNotifPermission: function () { return true; },
+    requestNotifPermission: function () { log('requestNotifPermission'); },
+    openNotifSettings: function () { log('openNotifSettings'); },
+    exportPlaylistTxt: function (p) { return JSON.stringify({uri:'file:///tmp/a.txt', name:'a.txt'}); },
+    shareFile: function () { return false; },
+    shareText: function () { return false; },
+  };
+
+  /* HTTP 假数据：搜索和歌词要能看到真实效果 */
+  var origFetch = window.fetch;
+  window.fetch = function (url) {
+    var u = String(url);
+    if (u.indexOf('/api/search') >= 0) {
+      var kw = decodeURIComponent((u.match(/q=([^&]*)/) || [])[1] || '');
+      return Promise.resolve({ json: function () { return Promise.resolve({
+        ok:true, hasMore:true,
+        list: SONGS.filter(function (s) {
+          return !kw || s.title.indexOf(kw) >= 0 || s.artist.indexOf(kw) >= 0;
+        })
+      }); } });
+    }
+    if (u.indexOf('/api/lyric') >= 0) {
+      return Promise.resolve({ json: function () { return Promise.resolve({
+        ok:true,
+        lyric:[
+          {time:0,  text:'这一路上走走停停'},
+          {time:6,  text:'顺着少年漂流的痕迹'},
+          {time:12, text:'迈出车站的前一秒'},
+          {time:18, text:'熟悉的面孔'},
+          {time:24, text:'青春 disappears 又回来'},
+          {time:30, text:'我看到rame的星光'},
+          {time:36, text:'把烦恼都放逐到天际'},
+        ]
+      }); } });
+    }
+    if (u.indexOf('/api/match') >= 0) {
+      return Promise.resolve({ json: function () { return Promise.resolve({
+        ok:true, item: SONGS[0]
+      }); } });
+    }
+    return origFetch ? origFetch.apply(window, arguments) : Promise.resolve({ json:function(){return Promise.resolve({ok:false});} });
+  };
+
+  /* 播放进度模拟：让进度条和歌词真的在动 */
+  window.__native.onProgress = function (p) { CN.S.cur = p.cur; CN.S.dur = p.dur; CN.syncLyric(Math.floor(p.cur)); CN.paintProgress(); };
+  setInterval(function () {
+    if (CN.S.state === 'playing' && !CN.S.freezeTick) {
+      CN.S.cur += 1;
+      CN.syncLyric(Math.floor(CN.S.cur));
+      CN.paintProgress();
+    }
+  }, 1000);
+
+  window.__MOCK = M;
+})();
+</script>
+<script>
+/* ===== 10-core.js ===== */
+/* ==========================================================================
+   椰子音乐 4 · 10-core.js
+   状态 / 原生桥 / HTTP / 工具 / Toast / Sheet / 视图路由
+   --------------------------------------------------------------------------
+   原生契约（两套都必须实现，缺一个就崩）：
+     1. window.Native —— 49 个 @JavascriptInterface 方法
+     2. window.__native —— 原生回调我们的 9 个钩子
+        onState / onTrack / onProgress / onError / onInsets /
+        onBack / onPickedTxt / onMusicImport / onMusicProgress / refreshLogin
+   ========================================================================== */
+
+window.CN = {};
+CN.VERSION = '4.03';
+
+/* ==========================================================================
+   一、状态
+   ========================================================================== */
+CN.S = {
+  view: 'home',       // home | search | list | import | settings
+  listKind: 'none',   // none | playlist | fav | history | search
+  listId: null,
+  listTitle: '',
+  songs: [],
+  results: [],
+  kw: '',
+  page: 1,
+  hasMore: false,
+
+  queue: [],
+  qIndex: -1,
+  track: null,
+  state: 'idle',      // idle | loading | playing | paused | error
+  mode: 'list',
+  loud: false,
+  cur: 0,
+  dur: 0,
+
+  lyric: [],
+  lyricIdx: -1,
+  favs: new Set(),
+  clips: {},
+  login: { logged_in: false, uname: '' },
+  ppageOpen: false,
+};
+
+CN.MODE = {
+  list:   { icon: 'loop',   text: '顺序播放' },
+  single: { icon: 'repeat', text: '单曲循环' },
+  random: { icon: 'shuffle',text: '随机播放' },
+};
+
+/* 四种皮肤 */
+CN.SKINS = [
+  { v: 'paper', n: '米白纸' },
+  { v: 'dark',  n: '深色纸' },
+  { v: 'pen',   n: '白底彩笔' },
+  { v: 'neon',  n: '夜光黑' },
+];
+
+/* ==========================================================================
+   二、工具
+   ========================================================================== */
+CN.$  = function (id) { return document.getElementById(id); };
+CN.esc = function (s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+};
+CN.fmt = function (sec) {
+  sec = Math.max(0, Math.floor(Number(sec) || 0));
+  var h = Math.floor(sec / 3600),
+      m = Math.floor((sec % 3600) / 60),
+      s = sec % 60,
+      mm = h > 0 ? String(m).padStart(2, '0') : String(m);
+  return (h > 0 ? h + ':' : '') + mm + ':' + String(s).padStart(2, '0');
+};
+CN.fmtPlays = function (n) {
+  n = Number(n) || 0;
+  if (n >= 1e8) return (n / 1e8).toFixed(1).replace(/\.0$/, '') + '亿';
+  if (n >= 1e4) return (n / 1e4).toFixed(1).replace(/\.0$/, '') + '万';
+  return String(n);
+};
+CN.debounce = function (fn, ms) {
+  var t = null;
+  return function () {
+    var self = this, args = arguments;
+    clearTimeout(t);
+    t = setTimeout(function () { fn.apply(self, args); }, ms || 300);
+  };
+};
+CN.clamp = function (v, a, b) { return Math.min(b, Math.max(a, v)); };
+CN.parse = function (s, d) {
+  if (s == null || s === '') return d;
+  try { return JSON.parse(s); } catch (e) { return d; }
+};
+
+/** 封面 URL 归一化：某弹幕网站图床要拼尺寸参数，data URI / 本地路径原样返回 */
+CN.coverUrl = function (u, w) {
+  if (!u) return '';
+  u = String(u);
+  /* 已经是完整可用地址就不加工，否则拼出的后缀反而会把它弄坏 */
+  if (u.indexOf('data:') === 0) return u;
+  if (u.indexOf('file://') === 0) return u;
+  if (u.indexOf('//') === 0) u = 'https:' + u;
+  if (u.indexOf('http://') === 0) u = 'https://' + u.slice(7);
+  u = u.replace(/@\d+w_\d+h_\d+c\.[a-z]+$/i, '');
+  if (w) u += '@' + w + 'w_' + Math.round(w * 0.5625) + 'h_1c.webp';
+  return u;
+};
+
+/** 歌曲是否「音源待匹配」（外部歌单导入的占位歌）
+ *  【核心契约】bvid 形如 mp_xxx，直接开 某弹幕网站搜索页是 404。
+ *  任何用 song.bvid 调 某弹幕网站的地方必须先过 ensureSongSource。 */
+CN.isUnmatched = function (t) {
+  return !!(t && (t.unmatched || (t.bvid && String(t.bvid).indexOf('mp_') === 0)));
+};
+CN.songTitle  = function (t) { return (t && (t.title || t.name)) || '未知歌曲'; };
+CN.songArtist = function (t) { return (t && t.artist) || '未知歌手'; };
+
+/* ==========================================================================
+   三、原生桥（49 个接口）
+   ========================================================================== */
+CN.N = (function () {
+  var N = window.Native || null;
+  return {
+    has: function (k) { return N && typeof N[k] === 'function'; },
+    /** 调用；原生缺失返回 null，绝不抛 */
+    call: function (m) {
+      if (!N || typeof N[m] !== 'function') return null;
+      try { return N[m].apply(N, Array.prototype.slice.call(arguments, 1)); }
+      catch (e) { if (window.console) console.warn('[bridge]', m, e); return null; }
+    },
+  };
+})();
+
+CN.api = {
+  /* ---------- 歌单 ---------- */
+  getPlaylists:   function () { return CN.parse(CN.N.call('getPlaylists'), []); },
+  createPlaylist: function (n) { return CN.parse(CN.N.call('createPlaylist', n), null); },
+  renamePlaylist: function (i, n) { CN.N.call('renamePlaylist', i, n); },
+  deletePlaylist: function (i) { CN.N.call('deletePlaylist', i); },
+  addToPlaylist:  function (p, s) { return CN.N.call('addToPlaylist', p, JSON.stringify(s)); },
+  addManyToPlaylist: function (p, a) { return CN.N.call('addSongsToPlaylist', p, JSON.stringify(a)); },
+  removeSongAt:   function (p, b, i) { return CN.N.call('removeSongAt', p, b, i); },
+  removeSongFrom: function (p, b) { return CN.N.call('removeSongFromPlaylist', p, b); },
+
+  /* ---------- 收藏 ---------- */
+  getFavorites:   function () { return CN.parse(CN.N.call('getFavorites'), []); },
+  isFavorite:     function (b) { return CN.N.call('isFavorite', b); },
+  toggleFavorite: function (s) {
+    var r = CN.N.call('toggleFavorite', JSON.stringify(s));
+    if (r) CN.S.favs.add(s.bvid); else CN.S.favs.delete(s.bvid);
+    return !!r;
+  },
+
+  /* ---------- 历史 ---------- */
+  getHistory:    function () { return CN.parse(CN.N.call('getHistory'), []); },
+  addHistory:    function (s) { CN.N.call('addHistory', JSON.stringify(s)); },
+  clearHistory:  function () { CN.N.call('clearHistory'); },
+
+  /* ---------- 设置 ---------- */
+  getSettings: function () { return CN.parse(CN.N.call('getSettings'), {}); },
+  setSetting:  function (k, v) { CN.N.call('setSetting', k, typeof v === 'boolean' ? String(v) : v); },
+
+  /* ---------- 队列 ---------- */
+  getQueue: function () { return CN.parse(CN.N.call('getQueue'), []); },
+
+  /* ---------- 换源 ---------- */
+  swapSongSource: function (o, k) { return CN.parse(CN.N.call('swapSongSource', o, k), null); },
+
+  /* ---------- 下载 ---------- */
+  getDownloadDir: function () { return CN.N.call('getDownloadDir') || 'Music / 椰子音乐'; },
+  getDownloads:   function () { return CN.parse(CN.N.call('getDownloads'), []); },
+  download:       function (s) { CN.N.call('download', JSON.stringify(s)); },
+
+  /* ---------- 导入 ---------- */
+  importLink:       function (i) { CN.N.call('importLink', i); },
+  importMusicPlaylist: function (i) { CN.N.call('importMusicPlaylist', i); },
+  pickTxtFile:      function () { CN.N.call('pickTxtFile'); },
+
+  /* ---------- 系统 ---------- */
+  copyText: function (t) {
+    var done = CN.N.call('copyText', t);
+    if (done === null) {
+      if (navigator.clipboard) navigator.clipboard.writeText(t).catch(function () {});
+      else {
+        var ta = document.createElement('textarea');
+        ta.value = t; document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); } catch (e) {}
+        document.body.removeChild(ta);
+      }
+    }
+  },
+  getClipboard: function () { return CN.N.call('getClipboard') || ''; },
+  openUrl:      function (u) { CN.N.call('openUrl', u); },
+  getUname:     function () { return CN.parse(CN.N.call('getUname'), { logged_in: false, uname: '' }); },
+  openLogin:    function () { CN.N.call('openLogin'); },
+  logout:       function () { CN.N.call('logout'); },
+  recheckLogin: function () { CN.N.call('recheckLogin'); },
+  hasNotifPermission:   function () { var r = CN.N.call('hasNotifPermission'); return r == null ? true : !!r; },
+  requestNotifPermission:function () { CN.N.call('requestNotifPermission'); },
+  openNotifSettings:    function () { CN.N.call('openNotifSettings'); },
+  setStatusBarColor: function (c) { CN.N.call('setStatusBarColor', c); },
+  exportPlaylistTxt: function (p) { return CN.parse(CN.N.call('exportPlaylistTxt', p), null); },
+  shareFile: function (u, n) { return !!CN.N.call('shareFile', u, n); },
+  shareText: function (t) { return !!CN.N.call('shareText', t); },
+};
+
+/* ==========================================================================
+   四、HTTP（31 个接口，浏览器预览时可用）
+   ========================================================================== */
+CN.http = {
+  get: function (path, params) {
+    if (location.protocol === 'file:') return Promise.resolve({ ok: false, offline: true });
+    var q = params ? Object.keys(params).map(function (k) {
+      return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]);
+    }).join('&') : '';
+    return fetch(path + (q ? '?' + q : ''), { cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .catch(function () { return { ok: false, error: 'network' }; });
+  },
+  search: function (q, p)  { return this.get('/api/search', { q: q, page: p || 1 }); },
+  match:  function (t, a, d) { return this.get('/api/match', { title: t, artist: a, duration: d }); },
+  lyric:  function (b, c) { return this.get('/api/lyric', { bvid: b, cid: c }); },
+  stream: function (b, c) { return this.get('/api/stream', { bvid: b, cid: c }); },
+  mpPreview: function (u) { return this.get('/api/mp/preview', { url: u }); },
+};
+
+/* ==========================================================================
+   五、Toast
+   ========================================================================== */
+var toastT = null;
+CN.toast = function (msg, ms) {
+  var el = CN.$('toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('on');
+  clearTimeout(toastT);
+  toastT = setTimeout(function () { el.classList.remove('on'); }, ms || 2200);
+};
+
+/* ==========================================================================
+   六、Sheet
+   ========================================================================== */
+CN.sheetOnClose = null;
+CN.sheetOpen = function () {
+  var s = CN.$('sheet');
+  return !!(s && s.classList.contains('on'));
+};
+CN.openSheet = function (title, opts) {
+  opts = opts || {};
+  var s = CN.$('sheet');
+  if (!s) return;
+  CN.$('sheetTitle').textContent = title || '操作';
+  CN.$('sheetBody').innerHTML = opts.html || '';
+
+  var hero = CN.$('sheetHero');
+  if (opts.hero) { hero.innerHTML = opts.hero; hero.hidden = false; }
+  else { hero.innerHTML = ''; hero.hidden = true; }
+
+  var foot = CN.$('sheetFoot');
+  if (opts.foot) { foot.innerHTML = opts.foot; foot.hidden = false; }
+  else { foot.innerHTML = ''; foot.hidden = true; }
+
+  s.classList.add('on');
+  CN.$('scrim').classList.add('on');
+  CN.sheetOnClose = opts.onClose || null;
+  if (opts.onMount) opts.onMount(CN.$('sheetBody'));
+};
+CN.closeSheet = function () {
+  var s = CN.$('sheet');
+  if (!s) return;
+  s.classList.remove('on');
+  if (!CN.S.ppageOpen) CN.$('scrim').classList.remove('on');
+  if (CN.sheetOnClose) { var f = CN.sheetOnClose; CN.sheetOnClose = null; f(); }
+};
+/** Sheet 条目 */
+CN.sItem = function (icon, title, sub, fn, cls) {
+  var el = document.createElement('button');
+  el.className = 'sitem' + (cls ? ' ' + cls : '');
+  el.innerHTML = CN.iconSvg(icon, 'svg') +
+    '<span class="sitem-txt"><span class="trunc">' + CN.esc(title) + '</span>' +
+    (sub ? '<span class="sitem-sub trunc">' + CN.esc(sub) + '</span>' : '') + '</span>';
+  if (fn) el.addEventListener('click', fn);
+  return el;
+};
+
+/* ==========================================================================
+   七、图标库（内联 SVG，不用 emoji）
+   ========================================================================== */
+CN.iconSvg = function (name, cls) {
+  var p = {
+    search:    '<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',
+    heart:     '<path d="M12 20.5S4 15.5 4 10a4.5 4.5 0 0 1 8-2.5A4.5 4.5 0 0 1 20 10c0 5.5-8 10.5-8 10.5z"/>',
+    loop:      '<path d="M7 7h10v3l4-4-4-4v3H5v6h2zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2z"/>',
+    repeat:    '<path d="M7 7h10v3l4-4-4-4v3H5v6h2zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2z"/>',
+    shuffle:   '<path d="M17 3l4 4-4 4V8h-2l-2 3-1.2-1.6L14.4 6H17zM3 6h5l8.3 12H21v-3l4 4-4 4v-3h-2.6L9.4 8H3zm0 10h5l2-3 1.2 1.6L8.6 18H3z"/>',
+    play:      '<path d="M8 5v14l11-7z"/>',
+    pause:     '<path d="M7 5h3.5v14H7zm6.5 0H17v14h-3.5z"/>',
+    prev:      '<path d="M6 6h2.5v12H6zM19 6v12l-9-6z"/>',
+    next:      '<path d="M15.5 6H18v12h-2.5zM5 6v12l9-6z"/>',
+    download:  '<path d="M12 4v11M8 11l4 4 4-4"/><path d="M4 19h16"/>',
+    add:       '<path d="M12 5v14M5 12h14"/>',
+    swap:      '<path d="M4 8h13M14 5l3 3-3 3M20 16H7M10 13l-3 3 3 3"/>',
+    trash:     '<path d="M5 7h14M9 7V5h6v2M7 7l1 13h8l1-13"/>',
+    list:      '<path d="M4 6h11M4 11h11M4 16h7"/><circle cx="18" cy="15" r="2.5"/>',
+    more:      '<circle cx="12" cy="5" r="1.6" class="svg-fill"/><circle cx="12" cy="12" r="1.6" class="svg-fill"/><circle cx="12" cy="19" r="1.6" class="svg-fill"/>',
+    share:     '<circle cx="17" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="17" cy="19" r="2.5"/><path d="M8.2 10.8l6.6-4.3M8.2 13.2l6.6 4.3"/>',
+    info:      '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',
+    close:     '<path d="M6 6l12 12M18 6L6 18"/>',
+    check:     '<path d="M5 13l4 4L19 7"/>',
+    refresh:   '<path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v4h-4"/>',
+    history:   '<path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v4h4M12 8v4l3 2"/>',
+    folder:    '<path d="M4 6h6l2 2h8v11H4z"/>',
+    music:     '<circle cx="12" cy="12" r="9"/><path d="M10 8l6-2v8"/><circle cx="8" cy="16" r="3"/><circle cx="14" cy="14" r="3"/>',
+    volume:    '<path d="M4 9v6h3l5 4V5L7 9z"/><path d="M16 9.5a3.5 3.5 0 0 1 0 5M18.5 7a7 7 0 0 1 0 10"/>',
+    link:      '<path d="M10 13a4 4 0 0 0 5.7.4l3-3A4 4 0 0 0 13 4.7l-1.7 1.7"/><path d="M14 11a4 4 0 0 0-5.7-.4l-3 3A4 4 0 0 0 11 19.3l1.7-1.7"/>',
+    bell:      '<path d="M6 10a6 6 0 0 1 12 0v5l2 2H4l2-2zM10 20h4"/>',
+    palette:   '<path d="M12 3a9 9 0 0 0 0 18c1 0 1.7-.8 1.7-1.7 0-.5-.2-.9-.5-1.3-.3-.3-.5-.7-.5-1.2 0-.9.8-1.7 1.7-1.7H16a5 5 0 0 0 5-5c0-4-4-7.1-9-7.1z"/><circle cx="7.5" cy="11" r="1" class="svg-fill"/><circle cx="10" cy="7" r="1" class="svg-fill"/><circle cx="15" cy="8" r="1" class="svg-fill"/>',
+    text:      '<path d="M5 6V4h14v2M12 4v16M9 20h6"/>',
+    rows:      '<path d="M4 6h16M4 12h16M4 18h16"/>',
+    sun:       '<circle cx="12" cy="12" r="5"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6L19 19M19 5l-1.4 1.4M6.4 17.6L5 19"/>',
+    moon:      '<path d="M20 14a8 8 0 1 1-10-10 7 7 0 0 0 10 10z"/>',
+  }[name] || '';
+  return '<svg class="' + (cls || 'svg') + '" viewBox="0 0 24 24" aria-hidden="true">' + p + '</svg>';
+};
+CN.setIcon = function (el, name, cls) {
+  if (el) el.innerHTML = CN.iconSvg(name, cls);
+};
+
+/* ==========================================================================
+   八、事件
+   ========================================================================== */
+CN.on = function (id, evt, fn) {
+  var el = typeof id === 'string' ? CN.$(id) : id;
+  if (!el) { console.warn('[bind] 不存在:', id); return; }
+  el.addEventListener(evt, fn);
+  el.__bound = (el.__bound || 0) + 1;
+};
+CN.delegate = function (rootId, sel, evt, fn) {
+  var root = typeof rootId === 'string' ? CN.$(rootId) : rootId;
+  if (!root || root.__dg) return;
+  root.__dg = true;
+  root.addEventListener(evt, function (e) {
+    var t = e.target.closest(sel);
+    if (t && root.contains(t)) fn.call(t, e, t);
+  });
+};
+CN.longPress = function (el, fn, ms) {
+  var tm = null, fired = false;
+  var st = function () { fired = false; tm = setTimeout(function () { fired = true; fn(); }, ms || 550); };
+  var cx = function () { clearTimeout(tm); tm = null; };
+  el.addEventListener('touchstart', st, { passive: true });
+  el.addEventListener('touchmove', cx, { passive: true });
+  el.addEventListener('touchend', cx);
+  el.addEventListener('touchcancel', cx);
+  el.addEventListener('mousedown', function (e) { if (e.button === 0) st(); });
+  el.addEventListener('mouseleave', cx);
+  el.addEventListener('mouseup', cx);
+  el.addEventListener('contextmenu', function (e) { if (!fired) e.preventDefault(); });
+};
+
+/* ==========================================================================
+   九、视图路由
+   ========================================================================== */
+CN.VIEW_TITLE = {
+  home: '椰子音乐', search: '搜索', list: '列表',
+  import: '导入', settings: '我的',
+};
+CN.go = function (view, back) {
+  var main = CN.$('main');
+  if (!main) return;
+  var from = main.querySelector('.view.on');
+  var to = CN.$('view' + view.charAt(0).toUpperCase() + view.slice(1));
+  if (!to) return;
+  if (from === to) { CN.onEnterView(view); return; }
+
+  CN.S.view = view;
+
+  if (from && from !== to) {
+    from.classList.remove('on');
+    from.classList.add(back ? 'left' : 'right');
+    /* 用 visibility 而不是 display 收起：
+       display:none 会让元素退出布局，导致退场动画失效、
+       且和 enterView 里的显隐设置打架（曾出现"切过去仍然看不见"）。 */
+    from.style.visibility = 'hidden';
+    from.style.pointerEvents = 'none';
+  }
+  to.classList.remove('left', 'right');
+  to.style.visibility = 'visible';
+  to.style.pointerEvents = '';
+  void to.offsetWidth;                 /* 强制回流让过渡生效 */
+  to.classList.add('on');
+
+  CN.syncTab();
+  CN.syncTop();
+  CN.onEnterView(view);
+
+  var sc = to.querySelector('.scroll');
+  if (sc) sc.scrollTop = 0;
+};
+
+/** 进入某个视图时触发它的渲染 */
+CN.onEnterView = function (view) {
+  if (view === 'settings') {
+    if (CN.renderSettings) CN.renderSettings();
+  } else if (view === 'search') {
+    if (CN.renderHistChips) CN.renderHistChips();
+    if (!CN.__clipChecked) { CN.__clipChecked = true; if (CN.checkClipboard) CN.checkClipboard(); }
+  } else if (view === 'import') {
+    if (CN.checkClipboard) CN.checkClipboard();
+  } else if (view === 'home') {
+    if (CN.renderHome) CN.renderHome();
+  }
+  /* list 由 openList() 负责渲染 */
+};
+
+CN.back = function () {
+  if (CN.sheetOpen()) { CN.closeSheet(); return; }
+  if (CN.S.ppageOpen) { CN.closePlayer(); return; }
+  if (CN.S.view !== 'home') CN.go('home', true);
+};
+
+CN.syncTab = function () {
+  var v = CN.S.view;
+  var key = (v === 'list')
+    ? (CN.S.listKind === 'fav' ? 'fav' : (CN.S.listKind === 'history' ? 'home' : 'home'))
+    : v;
+  Array.prototype.forEach.call(document.querySelectorAll('#tabbar .tab'), function (b) {
+    b.classList.toggle('on', b.dataset.view === key);
+  });
+};
+CN.syncTop = function () {
+  var t = CN.$('tbTitle');
+  if (t) t.textContent = CN.S.view === 'list' ? (CN.S.listTitle || '列表') : CN.VIEW_TITLE[CN.S.view];
+  var sb = CN.$('tbSearch');
+  if (sb) sb.hidden = (CN.S.view === 'settings');
+};
+
+/* 顶栏滚动阴影 */
+CN.watchScroll = function () {
+  var sc = document.querySelector('.view.on .scroll');
+  if (!sc || sc.__watched) return;
+  sc.__watched = true;
+  sc.addEventListener('scroll', function () {}, { passive: true });
+};
+
+
+/* ===== 20-player.js ===== */
+/* ==========================================================================
+   椰子音乐 4 · 20-player.js
+   队列 / 播放状态机 / 音源懒匹配 / 歌词 / 进度 / 播放页
+   --------------------------------------------------------------------------
+   【核心契约，继承自旧版，一条都不能破】
+     1. 外部歌单导入的占位音源（bvid = mp_<mid>）首次播放才匹配，不批量预热
+     2. 凡用 song.bvid 调 某弹幕网站，必须先过 ensureSongSource（mp_xxx 是 404）
+     3. 匹配失败不跳下一首（用户想听的就是这首）
+     4. 不要批量预热匹配 —— 撞 某弹幕网站风控
+   ========================================================================== */
+
+/* ==========================================================================
+   一、原生回调入口（原生通过 window.__native.xxx 调我们）
+   ========================================================================== */
+window.__native = {
+  onState: function (st) {
+    CN.S.state = st;
+    if (st === 'playing') { CN.loadLyrics(CN.S.track); CN.tick(); }
+    else CN.untick();
+    CN.paint();
+  },
+  onTrack: function (t) {
+    if (!t) return;
+    CN.S.track = t;
+    CN.S.cur = 0;
+    CN.S.dur = Number(t.duration) || 0;
+    CN.S.lyric = [];
+    CN.S.lyricIdx = -1;
+    /* 同步到队列，保证播放界面和队列一致 */
+    if (CN.S.qIndex >= 0 && CN.S.queue[CN.S.qIndex]) {
+      CN.S.queue[CN.S.qIndex] = t;
+    }
+    CN.paint();
+  },
+  onProgress: function (p) {
+    CN.S.cur = p.cur || 0;
+    CN.S.dur = p.dur || CN.S.dur;
+    CN.syncLyric(Math.floor(CN.S.cur));
+    CN.paintProgress();
+  },
+  onError: function (msg) {
+    CN.S.state = 'error';
+    CN.paint();
+    CN.toast(msg || '播放出错');
+  },
+  /** 安全区 inset（原生注入，CSS env() 在部分 WebView 上不可靠）*/
+  onInsets: function (t, b, l, r) {
+    var s = document.documentElement.style;
+    s.setProperty('--sys-top', Math.max(0, t || 0) + 'px');
+    s.setProperty('--sys-bot', Math.max(0, b || 0) + 'px');
+    s.setProperty('--sys-left', Math.max(0, l || 0) + 'px');
+    s.setProperty('--sys-right', Math.max(0, r || 0) + 'px');
+  },
+  /** 硬件返回键 */
+  onBack: function () { CN.back(); },
+  /** 选了 TXT 文件 */
+  onPickedTxt: function (text) {
+    var inp = CN.$('impInput');
+    if (inp) inp.value = text;
+    CN.doImport();
+  },
+  /** 外部歌单导入完成 */
+  onMusicImport: function (r) {
+    CN.$('impProgWrap').style.display = 'none';
+    CN.toast(r && r.ok ? ('已导入 ' + (r.count || 0) + ' 首') : (r && r.msg) || '导入失败');
+    CN.renderHome();
+  },
+  /** 外部歌单导入进度 */
+  onMusicProgress: function (cur, total) {
+    var w = CN.$('impProgWrap');
+    if (!w) return;
+    w.style.display = '';
+    var pct = total ? Math.round(cur / total * 100) : 0;
+    CN.$('impProg').style.setProperty('--p', pct + '%');
+  },
+  /** 登录状态变了 */
+  refreshLogin: function () { CN.refreshLogin(); CN.renderHome(); },
+};
+
+/* ==========================================================================
+   二、播放控制
+   ========================================================================== */
+CN.setQueue = function (list, index) {
+  if (!list || !list.length) return;
+  CN.S.queue = list.slice();
+  var i = CN.clamp(index || 0, 0, list.length - 1);
+  CN.S.qIndex = i;
+  CN.S.track = list[i];
+  CN.S.cur = 0;
+  CN.S.dur = Number(list[i].duration) || 0;
+  CN.S.lyric = [];
+  CN.S.lyricIdx = -1;
+  CN.api.addHistory(list[i]);
+  CN.play();
+};
+
+CN.play = function () {
+  var t = CN.S.track;
+  if (!t) { CN.toast('还没有可播放的歌曲'); return; }
+
+  CN.S.state = 'loading';
+  CN.paint();
+
+  /* 【契约 2】占位音源必须先补源，否则传给原生的是 mp_xxx */
+  CN.ensureSongSource(t).then(function (ok) {
+    if (!ok) {
+      CN.S.state = 'error';
+      CN.paint();
+      CN.toast('没找到可播音源，可在播放页点「换源」自己挑一个');
+      return;
+    }
+    /* 交给原生播放 */
+    if (CN.N.has('playQueue')) {
+      CN.N.call('playQueue', JSON.stringify(CN.S.queue), CN.S.qIndex);
+    } else if (CN.N.has('toggle')) {
+      CN.N.call('toggle');
+    }
+  });
+};
+
+CN.toggle = function () {
+  CN.S.state === 'playing' ? CN.pause() : CN.N.call('toggle');
+};
+CN.pause  = function () { CN.N.call('toggle'); };
+CN.next   = function () { CN.N.call('next'); };
+CN.prev   = function () {
+  /* 超过 3 秒先回开头 —— 与旧版一致的习惯 */
+  if (CN.S.cur > 3) CN.N.call('seek', 0);
+  else CN.N.call('prev');
+};
+CN.seek   = function (s) { CN.N.call('seek', s); };
+CN.nextMode = function () {
+  var order = ['list', 'single', 'random'];
+  var i = order.indexOf(CN.S.mode);
+  var next = order[(i + 1) % 3];
+  CN.setMode(next);
+  CN.toast(CN.MODE[next].text);
+  CN.paint();
+};
+CN.setMode = function (m) {
+  CN.S.mode = m;
+  CN.api.setSetting('playMode', m);       /* 持久化：旧版存了不读回 */
+};
+CN.setLoud = function (on) {
+  CN.S.loud = !!on;
+  CN.N.call('setLoudness', !!on);
+  CN.api.setSetting('loudness', !!on);    /* 持久化：旧版只调不存 */
+  CN.paint();
+};
+CN.enqueueNext = function (song) {
+  CN.N.call('enqueueNext', JSON.stringify(song));
+  CN.toast('已插入下一首播放');
+};
+
+/* ==========================================================================
+   三、音源懒匹配（契约 1/2/3）
+   ========================================================================== */
+CN.ensureSongSource = function (song) {
+  if (!CN.isUnmatched(song)) return Promise.resolve(true);
+
+  var kw = CN.cleanQuery(CN.songTitle(song) + ' ' + CN.songArtist(song));
+
+  return CN.http.match(CN.songTitle(song), CN.songArtist(song), song.duration)
+    .then(function (r) {
+      if (r && r.ok && r.item && r.item.bvid) {
+        var old = song.bvid;
+        song.bvid = r.item.bvid;
+        song.cid = r.item.cid;
+        song.cover = r.item.cover || song.cover;
+        song.unmatched = false;
+        CN.syncQueueSource(old, song);
+        return true;
+      }
+      return false;
+    })
+    .catch(function () { return false; });
+};
+
+/** 换源后同步队列里所有同条目 */
+CN.syncQueueSource = function (oldBvid, fresh) {
+  if (!oldBvid) return;
+  CN.S.queue.forEach(function (x, i) {
+    if (x.bvid === oldBvid) {
+      CN.S.queue[i] = fresh;
+      if (i === CN.S.qIndex) CN.S.track = fresh;
+    }
+  });
+  /* 原生侧批量回写 */
+  if (CN.N.has('fixSongSource')) CN.N.call('fixSongSource', 'all', '', oldBvid, '');
+};
+
+CN.cleanQuery = function (s) {
+  return String(s || '')
+    .replace(/[\[（(【].{0,12}[\]）)】]/g, ' ')
+    .replace(/\b(official|lyric|lyrics|video|audio|mv|remaster(ed)?|hd|hq|4k|完整版|官方|高清|无损|现场版|伴奏)\b/gi, ' ')
+    .replace(/\s+/g, ' ').trim();
+};
+
+/* ==========================================================================
+   四、歌词
+   ========================================================================== */
+CN.loadLyrics = function (song) {
+  if (!song) return;
+  if (CN.isUnmatched(song)) { CN.noLyric(); return; }   /* 契约 2 */
+
+  var want = song.bvid;
+  CN.http.lyric(song.bvid, song.cid).then(function (r) {
+    /* 过期响应丢弃：切歌后回来的旧歌词不渲染 */
+    if (!CN.S.track || CN.S.track.bvid !== want) return;
+    if (r && r.ok && r.lyric && r.lyric.length) {
+      CN.S.lyric = r.lyric;
+      CN.S.lyricIdx = -1;
+      CN.renderLyric();
+      CN.syncLyric(Math.floor(CN.S.cur));
+    } else CN.noLyric();
+  });
+};
+
+CN.noLyric = function () {
+  CN.S.lyric = [];
+  CN.S.lyricIdx = -1;
+  var el = CN.$('ppLyric');
+  if (el) el.innerHTML = '<div class="pp-lyric-msg">纯音乐，请欣赏</div>';
+  var ml = CN.$('miniLyric');
+  if (ml) ml.textContent = '';
+};
+
+CN.renderLyric = function () {
+  var el = CN.$('ppLyric');
+  if (!el) return;
+  el.style.transform = 'translateY(0)';
+  el.innerHTML = CN.S.lyric.map(function (l, i) {
+    return '<div class="pp-lyric-line" data-i="' + i + '">' + CN.esc(l.text || '…') + '</div>';
+  }).join('');
+};
+
+CN.syncLyric = function (sec) {
+  if (!CN.S.lyric.length) return;
+  var idx = -1;
+  for (var i = 0; i < CN.S.lyric.length; i++) {
+    if (CN.S.lyric[i].time <= sec) idx = i; else break;
+  }
+  if (idx === CN.S.lyricIdx) return;
+  CN.S.lyricIdx = idx;
+
+  Array.prototype.forEach.call(
+    document.querySelectorAll('#ppLyric .pp-lyric-line'),
+    function (el, i) { el.classList.toggle('on', i === idx); }
+  );
+
+  /* 居中：当前行大致居中，不做平滑跟随（避免抖动）*/
+  var box = document.querySelector('.pp-lyricbox');
+  var cur = document.querySelector('#ppLyric .pp-lyric-line.on');
+  if (box && cur) {
+    var list = CN.$('ppLyric');
+    var target = cur.offsetTop - box.clientHeight / 2 + cur.offsetHeight / 2;
+    list.style.transform = 'translateY(' + (-target) + 'px)';
+  }
+
+  var ml = CN.$('miniLyric');
+  if (ml && idx >= 0) ml.textContent = (CN.S.lyric[idx].text || '').trim();
+};
+
+/* ==========================================================================
+   五、进度 tick（App 内由原生 onProgress 驱动；
+   浏览器预览时才用本地计时器）
+   ========================================================================== */
+CN.tickTimer = null;
+CN.tick = function () {
+  CN.untick();
+  if (CN.N.has('playQueue')) return;      /* App 内靠原生回调，不用自己转 */
+  CN.tickTimer = setInterval(function () {
+    if (CN.S.state !== 'playing') return;
+    CN.S.cur += 0.5;
+    if (CN.S.dur && CN.S.cur >= CN.S.dur) { CN.next(); return; }
+    CN.syncLyric(Math.floor(CN.S.cur));
+    CN.paintProgress();
+  }, 500);
+};
+CN.untick = function () {
+  if (CN.tickTimer) { clearInterval(CN.tickTimer); CN.tickTimer = null; }
+};
+
+/* 拖动限流 80ms */
+var seekThrottle = null;
+CN.seekByRatio = function (r) {
+  var sec = CN.clamp(r, 0, 1) * (CN.S.dur || 0);
+  CN.S.cur = sec;
+  CN.syncLyric(Math.floor(sec));
+  if (seekThrottle) return;
+  seekThrottle = setTimeout(function () {
+    seekThrottle = null;
+    CN.seek(sec);
+    CN.paintProgress();
+  }, 80);
+};
+
+/* ==========================================================================
+   六、界面同步
+   ========================================================================== */
+CN.ratio = function () {
+  if (!CN.S.dur) return 0;
+  return CN.clamp(CN.S.cur / CN.S.dur, 0, 1);
+};
+
+/** 收藏状态单一真相 —— 旧版三处图标各画各的，切歌后状态骗人 */
+CN.paintFav = function () {
+  var on = !!(CN.S.track && CN.S.favs.has(CN.S.track.bvid));
+  ['miniFav', 'ppFav'].forEach(function (id) {
+    var el = CN.$(id);
+    if (el) el.classList.toggle('on', on);
+  });
+  var f = document.querySelector('#ppFav svg');
+  if (f) f.setAttribute('fill', on ? 'currentColor' : 'none');
+};
+
+CN.favTap = function () {
+  var t = CN.S.track;
+  if (!t) { CN.toast('还没有在播放的歌曲'); return; }
+  var now = CN.api.toggleFavorite(t);
+  CN.paintFav();
+  CN.toast(now ? '已收藏' : '已取消收藏');
+};
+
+/** 只刷进度相关的（onProgress 高频调用，不能全量重绘）*/
+CN.paintProgress = function () {
+  var pct = CN.ratio() * 100 + '%';
+  var mini = CN.$('miniProg');
+  if (mini) mini.style.setProperty('--p', pct);
+  var fill = CN.$('ppFill');
+  if (fill) fill.style.setProperty('--p', pct);
+  var tr = CN.$('ppTrack');
+  if (tr) tr.setAttribute('aria-valuenow', Math.round(CN.ratio() * 100));
+  var c = CN.$('ppCur');
+  if (c) c.textContent = CN.fmt(CN.S.cur);
+  var d = CN.$('ppDur');
+  if (d) d.textContent = CN.fmt(CN.S.dur);
+};
+
+/** 全量重绘（切歌/状态变化时）*/
+CN.paint = function () {
+  var t = CN.S.track;
+  var st = CN.S.state;
+  var u = CN.coverUrl(t && t.cover, 120);
+
+  /* --- Mini --- */
+  var mc = CN.$('miniCov');
+  if (mc) { if (u) mc.src = u; mc.style.display = u ? '' : 'none'; }
+  var mt = CN.$('miniT'), ma = CN.$('miniA');
+  if (mt) mt.textContent = t ? CN.songTitle(t) : '未在播放';
+  if (ma) ma.textContent = t ? CN.songArtist(t) : '—';
+  var mini = CN.$('mini');
+  if (mini) mini.dataset.state = st;
+  CN.setIcon(CN.$('miniPlayIcon'), st === 'playing' ? 'pause' : 'play', 'svg svg-sm svg-fill');
+  var app = CN.$('app');
+  if (app) app.dataset.mini = t ? 'on' : 'off';
+
+  /* --- 首页大卡 --- */
+  var hn = CN.$('homeNow');
+  if (hn) {
+    hn.style.display = t ? '' : 'none';
+    var hc = CN.$('homeNowCov');
+    if (hc && u) hc.src = u;
+    var ht = CN.$('homeNowT'), ha = CN.$('homeNowA');
+    if (ht) ht.textContent = t ? CN.songTitle(t) : '';
+    if (ha) ha.textContent = t ? CN.songArtist(t) : '';
+  }
+
+  /* --- 播放页 --- */
+  var pp = CN.$('ppage');
+  if (pp) {
+    pp.dataset.state = st;
+    var pu = CN.coverUrl(t && t.cover, 720);
+    var pc = CN.$('ppCover');
+    if (pc && pu) pc.src = pu;
+    var pt = CN.$('ppTitle'), pa = CN.$('ppArtist');
+    if (pt) pt.textContent = t ? CN.songTitle(t) : '未在播放';
+    if (pa) pa.textContent = t ? CN.songArtist(t) : '—';
+    var ps = CN.$('ppSrcSub');
+    if (ps) ps.textContent = (t && t.bvid)
+      ? (CN.isUnmatched(t) ? '音源待匹配' : '来自 某弹幕网站')
+      : '—';
+    CN.setIcon(CN.$('ppPlayIcon'), st === 'playing' ? 'pause' : 'play', 'svg svg-lg svg-fill');
+    CN.setIcon(CN.$('ppModeIcon'), CN.MODE[CN.S.mode].icon, 'svg svg-sm');
+    CN.$('ppLoud').classList.toggle('on', !!CN.S.loud);
+    var hp = CN.$('homeNowPlay');
+    if (hp) CN.setIcon(hp, st === 'playing' ? 'pause' : 'play', 'svg svg-fill');
+  }
+
+  CN.paintProgress();
+  CN.paintFav();
+  CN.markPlaying();
+};
+
+/** 列表里标记当前播放行 */
+CN.markPlaying = function () {
+  var bvid = CN.S.track && CN.S.track.bvid;
+  Array.prototype.forEach.call(document.querySelectorAll('#songList .srow'), function (row) {
+    var on = bvid && row.dataset.bvid === bvid;
+    row.classList.toggle('on', !!on);
+    row.dataset.state = on ? CN.S.state : '';
+    var wv = row.querySelector('.wave');
+    if (on && !wv) {
+      var cov = row.querySelector('.srow-cover');
+      if (cov) {
+        var w = document.createElement('span');
+        w.className = 'wave';
+        w.innerHTML = '<i></i><i></i><i></i><i></i>';
+        cov.parentNode.replaceChild(w, cov);
+      }
+    } else if (!on && wv) {
+      var img = document.createElement('img');
+      img.className = 'srow-cover';
+      img.src = CN.coverUrl(row.dataset.cover, 120);
+      img.alt = '';
+      wv.parentNode.replaceChild(img, wv);
+    }
+  });
+};
+
+/* ==========================================================================
+   七、播放页开合
+   ========================================================================== */
+CN.openPlayer = function () {
+  if (!CN.S.track) { CN.toast('还没有在播放的歌曲'); return; }
+  CN.S.ppageOpen = true;
+  CN.$('ppage').classList.add('on');
+  CN.$('scrim').classList.add('on');
+  if (!CN.S.lyric.length) CN.loadLyrics(CN.S.track);
+  CN.paint();
+};
+CN.closePlayer = function () {
+  CN.S.ppageOpen = false;
+  CN.$('ppage').classList.remove('on');
+  if (!CN.sheetOpen()) CN.$('scrim').classList.remove('on');
+};
+
+/* ==========================================================================
+   八、队列
+   ========================================================================== */
+CN.renderQueue = function (box) {
+  var q = CN.S.queue;
+  if (!q.length) {
+    box.innerHTML = '<div class="empty">' + CN.iconSvg('list', 'svg') +
+      '<span class="t-cap">播放队列是空的</span></div>';
+    return;
+  }
+  box.innerHTML = '<div style="display:flex;align-items:center;padding:8px var(--pad) 4px">' +
+      '<span class="t-cap" style="font-weight:700">播放队列 · ' + q.length + ' 首</span>' +
+      '<button class="sec-more" id="qClear" style="margin-left:auto">清空</button></div>' +
+    q.map(function (s, i) {
+      return '<div class="srow' + (i === CN.S.qIndex ? ' on' : '') + '" data-q="' + i + '">' +
+        '<span class="t-cap num" style="width:22px;flex:none;text-align:center">' + (i + 1) + '</span>' +
+        '<span class="srow-txt"><span class="srow-name trunc">' + CN.esc(CN.songTitle(s)) + '</span>' +
+        '<span class="t-artist trunc">' + CN.esc(CN.songArtist(s)) + '</span></span>' +
+        '<span class="srow-dur">' + CN.fmt(s.duration) + '</span></div>';
+    }).join('');
+  var clr = CN.$('qClear');
+  if (clr) clr.addEventListener('click', function (e) {
+    e.stopPropagation();
+    CN.S.queue = []; CN.S.qIndex = -1; CN.S.track = null;
+    CN.S.state = 'idle';
+    CN.paint();
+    CN.closeSheet();
+    CN.toast('队列已清空');
+  });
+};
+
+
+/* ===== 30-views.js ===== */
+/* ==========================================================================
+   椰子音乐 4 · 30-views.js
+   首页 / 搜索 / 通用列表 / 导入
+   ========================================================================== */
+
+/* ==========================================================================
+   一、首页
+   ========================================================================== */
+CN.renderHome = function () {
+  var grid = CN.$('homeGrid');
+  if (!grid) return;
+
+  var favs = CN.api.getFavorites() || [];
+  var hist = CN.api.getHistory() || [];
+  var dls  = CN.api.getDownloads() || [];
+
+  /* 四入口 */
+  var entries = [
+    { k: 'fav',     t: '我喜欢的音乐', s: favs.length ? favs.length + ' 首' : '还没有收藏', i: 'heart',   c: '#FFE8E0', n: favs.length, first: favs[0] },
+    { k: 'history', t: '最近播放',     s: hist.length ? hist.length + ' 首' : '还没有记录', i: 'history', c: '#E3EEFF', n: hist.length, first: hist[0] },
+    { k: 'download',t: '已下载',       s: dls.length  ? dls.length  + ' 首' : '还没有下载', i: 'folder',  c: '#FFF3D6', n: dls.length,  first: dls[0] },
+    { k: 'import',  t: '导入歌单',     s: '外部歌单 / 某弹幕网站 / TXT',                        i: 'link',    c: '#E3F7EC', n: 0 },
+  ];
+
+  /* 四入口：**横向列表式**，不是 2×2 大方块。
+     【2026-10-09 用户反馈"图标大到离谱，占视野，要多留白"】
+     大方块 + 满幅封面 = 视觉重量过大。这里改成
+     「左小封面 + 右文字」的一行式条目，封面缩到 56px，
+     整屏能多放一倍内容，留白自然就回来了。 */
+  grid.style.display = 'flex';
+  grid.style.flexDirection = 'column';
+  grid.style.gap = '10px';
+
+  grid.innerHTML = entries.map(function (e) {
+    var cu = e.first ? CN.coverUrl(e.first.cover, 200) : '';
+    /* 封面用 <img> 而不是 background-image：
+       data URI（含 & 和 base64）走 CSS url() 会被转义破坏，<img> 不会。 */
+    return '<div class="card card-btn ent-row" data-go="' + e.k + '">' +
+      '<div class="ent-cover"' + (cu ? '' : ' style="background:' + e.c + '"') + '>' +
+        (cu ? '<img src="' + CN.esc(cu) + '" alt="" loading="lazy">'
+            : CN.iconSvg(e.i, 'svg svg-sm')) +
+      '</div>' +
+      '<div class="ent-txt">' +
+        '<div class="t-name trunc">' + e.t + '</div>' +
+        '<div class="t-cap trunc">' + e.s + '</div>' +
+      '</div>' +
+      (e.n > 0 ? '<span class="ent-play">' + CN.iconSvg('play', 'svg svg-sm svg-fill') + '</span>' : '') +
+    '</div>';
+  }).join('');
+
+  /* 自建歌单 */
+  var pls = CN.api.getPlaylists() || [];
+  var pg = CN.$('plGrid');
+  pg.innerHTML = pls.map(function (p) {
+    var songs = p.songs || [];
+    var first = songs[0];
+    var cu = first ? CN.coverUrl(first.cover, 200) : '';
+    /* 同样留白：卡片内留 12px，封面不再顶满 */
+    return '<div class="card card-btn" data-pl="' + CN.esc(p.id) + '" style="width:116px;padding:10px 10px 12px;flex:none">' +
+      '<div style="position:relative;width:100%;aspect-ratio:1;border-radius:var(--r-sm);' +
+        'border:var(--line-w) solid var(--ink);overflow:hidden;background:var(--paper-3);display:grid;place-items:center">' +
+        (cu ? '<img src="' + CN.esc(cu) + '" alt="" style="width:100%;height:100%;object-fit:cover">'
+            : CN.iconSvg('music', 'svg svg-lg')) +
+        (songs.length ? '<span style="position:absolute;right:5px;bottom:5px;width:28px;height:28px;' +
+          'border-radius:50%;background:var(--accent);border:var(--line-w) solid var(--ink);color:#fff;' +
+          'display:grid;place-items:center">' + CN.iconSvg('play', 'svg svg-sm svg-fill') + '</span>' : '') +
+      '</div>' +
+      '<div class="t-card trunc" style="margin-top:10px">' + CN.esc(p.name) + '</div>' +
+      '<div class="t-cap" style="margin-top:2px">' + songs.length + ' 首</div>' +
+    '</div>';
+  }).join('');
+
+  /* 事件委托 */
+  CN.delegate('homeGrid', '[data-go]', 'click', function (e, t) { CN.openSection(t.dataset.go); });
+  CN.delegate('plGrid', '[data-pl]', 'click', function (e, t) { CN.openPlaylist(t.dataset.pl); });
+};
+
+CN.openSection = function (k) {
+  if (k === 'fav')      return CN.openList({ kind: 'fav', title: '我喜欢的音乐' });
+  if (k === 'history')  return CN.openList({ kind: 'history', title: '最近播放' });
+  if (k === 'import')   return CN.go('import');
+  if (k === 'download') return CN.openList({ kind: 'download', title: '已下载' });
+};
+
+CN.openPlaylist = function (id) {
+  var p = (CN.api.getPlaylists() || []).filter(function (x) { return x.id === id; })[0];
+  if (!p) { CN.toast('歌单不存在'); return; }
+  CN.openList({ kind: 'playlist', id: id, title: p.name });
+};
+
+/* ==========================================================================
+   二、通用列表
+   --------------------------------------------------------------------------
+   S.listKind 显式建模来源 —— 旧版「搜过一次后打开歌单被换成搜索结果」
+   ========================================================================== */
+CN.openList = function (o) {
+  o = o || {};
+  CN.S.listKind = o.kind || 'playlist';
+  CN.S.listId = o.id || null;
+  CN.S.listTitle = o.title || '列表';
+
+  if (CN.S.listKind === 'fav')         CN.S.songs = (CN.api.getFavorites() || []).slice();
+  else if (CN.S.listKind === 'history') CN.S.songs = (CN.api.getHistory() || []).slice();
+  else if (CN.S.listKind === 'download')CN.S.songs = (CN.api.getDownloads() || []).slice();
+  else if (CN.S.listKind === 'search')  CN.S.songs = (CN.S.results || []).slice();
+  else {
+    var p = (CN.api.getPlaylists() || []).filter(function (x) { return x.id === CN.S.listId; })[0];
+    CN.S.songs = p ? (p.songs || []).slice() : [];
+  }
+  CN.go('list');
+  CN.renderList();
+};
+
+CN.renderList = function () {
+  var box = CN.$('songList');
+  if (!box) return;
+  var list = CN.S.songs || [];
+
+  CN.$('listTitle').textContent = CN.S.listTitle || '列表';
+  var sub;
+  if (CN.S.listKind === 'fav')      sub = list.length ? list.length + ' 首' : '还没有收藏';
+  else if (CN.S.listKind === 'history') sub = list.length ? '最近 ' + list.length + ' 首' : '还没有播放记录';
+  else if (CN.S.listKind === 'search')  sub = list.length ? '找到 ' + list.length + ' 条' : '没有结果';
+  else sub = list.length + ' 首';
+  CN.$('listSub').textContent = sub;
+
+  var cov = CN.$('listCover');
+  var cu = list.length ? CN.coverUrl(list[0].cover, 300) : '';
+  if (cu) { cov.src = cu; cov.style.visibility = ''; }
+  else { cov.removeAttribute('src'); cov.style.visibility = 'hidden'; }
+
+  if (!list.length) {
+    box.innerHTML = '<div class="empty">' + CN.iconSvg('music', 'svg') +
+      '<span class="t-cap">' + CN.emptyHint() + '</span></div>';
+    CN.$('songFoot').innerHTML = '';
+    return;
+  }
+
+  var cur = CN.S.track && CN.S.track.bvid;
+  /* 歌曲行结构对标 某音乐平台：
+     封面在左 → 两位大序号（01./02.）→ 歌名+歌手 → 右侧 ⋮
+     当前播放行：序号与歌名一起变强调色。 */
+  box.innerHTML = list.map(function (s, i) {
+    var on = cur && s.bvid === cur;
+    var u = CN.coverUrl(s.cover, 120);
+    var cell = on
+      ? '<span class="wave"><i></i><i></i><i></i><i></i></span>'
+      : (u ? '<img class="srow-cover" src="' + CN.esc(u) + '" alt="" loading="lazy">'
+           : '<span class="srow-cover"></span>');
+    var no = (i + 1 < 10 ? '0' : '') + (i + 1);
+    return '<div class="srow' + (on ? ' on' : '') + '" data-i="' + i + '" data-bvid="' +
+      CN.esc(s.bvid || '') + '" data-cover="' + CN.esc(u) + '" data-state="' +
+      (on ? CN.S.state : '') + '">' +
+      cell +
+      '<span class="srow-no">' + no + '</span>' +
+      '<span class="srow-txt">' +
+        '<span class="srow-name trunc">' + CN.esc(CN.songTitle(s)) + '</span>' +
+        '<span class="t-artist trunc">' + CN.esc(CN.songArtist(s)) +
+          (CN.isUnmatched(s) ? ' · 待匹配' : '') + '</span>' +
+      '</span>' +
+      '<span class="srow-dur">' + CN.fmt(s.duration) + '</span>' +
+      '<button class="srow-more" data-more="' + i + '" aria-label="更多">' +
+        CN.iconSvg('more', 'svg svg-sm') + '</button>' +
+    '</div>';
+  }).join('');
+
+  /* 底部 */
+  var foot = CN.$('songFoot');
+  if (CN.S.listKind === 'search' && CN.S.hasMore) {
+    foot.innerHTML = '<button class="btn btn-block" id="loadMore" style="margin-top:var(--gap)">加载更多</button>';
+    CN.on('loadMore', 'click', function () { CN.S.page++; CN.runSearch(CN.S.kw, true); });
+  } else if (CN.S.listKind === 'playlist' || CN.S.listKind === 'fav') {
+    foot.innerHTML = '<button class="btn btn-block" id="favAllBtn" style="margin-top:var(--gap)">收藏全部</button>';
+    CN.on('favAllBtn', 'click', CN.favAll);
+  } else foot.innerHTML = '';
+};
+
+CN.emptyHint = function () {
+  if (CN.S.listKind === 'fav')      return '还没有收藏\n在歌曲上点 ♡ 就会出现在这里';
+  if (CN.S.listKind === 'history')  return '还没有播放记录';
+  if (CN.S.listKind === 'download') return '还没有下载的歌曲';
+  if (CN.S.listKind === 'search')   return '没找到相关歌曲\n换个词试试';
+  return '这个歌单还没有歌曲';
+};
+
+CN.refreshList = function () {
+  if (CN.S.view !== 'list') return;
+  if (CN.S.listKind === 'playlist' && CN.S.listId) {
+    var p = (CN.api.getPlaylists() || []).filter(function (x) { return x.id === CN.S.listId; })[0];
+    if (p) { CN.S.songs = (p.songs || []).slice(); CN.renderList(); }
+  } else if (CN.S.listKind === 'fav') {
+    CN.S.songs = (CN.api.getFavorites() || []).slice();
+    CN.renderList();
+  }
+};
+
+CN.favAll = function () {
+  var list = CN.S.songs || [];
+  if (!list.length) { CN.toast('列表是空的'); return; }
+  var n = 0;
+  list.forEach(function (s) {
+    if (!CN.S.favs.has(s.bvid)) { CN.api.toggleFavorite(s); n++; }
+  });
+  CN.paintFav();
+  CN.toast(n ? '已收藏 ' + n + ' 首' : '都已经收藏过了');
+};
+
+/* ==========================================================================
+   三、搜索
+   ========================================================================== */
+CN.HIST_KEY = 'coconut4_search_history';
+CN.histWords = function () {
+  try { return JSON.parse(localStorage.getItem(CN.HIST_KEY)) || []; } catch (e) { return []; }
+};
+CN.pushHist = function (w) {
+  w = String(w || '').trim();
+  if (!w) return;
+  var l = CN.histWords().filter(function (x) { return x !== w; });
+  l.unshift(w);
+  if (l.length > 12) l.length = 12;      /* 旧版上限 12，保留 */
+  try { localStorage.setItem(CN.HIST_KEY, JSON.stringify(l)); } catch (e) {}
+  CN.renderHistChips();
+};
+CN.clearHist = function () {
+  try { localStorage.removeItem(CN.HIST_KEY); } catch (e) {}
+  CN.renderHistChips();
+};
+CN.renderHistChips = function () {
+  var box = CN.$('histChips');
+  if (!box) return;
+  var w = CN.histWords();
+  CN.$('histSec').hidden = !w.length;
+  box.innerHTML = w.map(function (x) {
+    return '<button class="chip" data-kw="' + CN.esc(x) + '">' + CN.esc(x) + '</button>';
+  }).join('');
+};
+
+CN.debouncedSearch = CN.debounce(function (kw) { CN.runSearch(kw, false); }, 450);
+
+CN.runSearch = function (kw, append) {
+  kw = String(kw || '').trim();
+  if (!kw) return;
+  CN.S.kw = kw;
+  if (!append) { CN.S.page = 1; CN.S.results = []; }
+
+  var body = CN.$('searchBody');
+  if (!append && body) body.innerHTML =
+    '<div class="empty"><div class="spinner"></div><span class="t-cap">搜索中…</span></div>';
+
+  CN.http.search(kw, CN.S.page).then(function (r) {
+    if (r && r.ok && r.list) {
+      CN.S.results = append ? CN.S.results.concat(r.list) : r.list.slice();
+      CN.S.hasMore = !!r.hasMore;
+      if (!append) CN.pushHist(kw);
+      CN.openList({ kind: 'search', title: '“' + kw + '”' });
+    } else {
+      CN.S.results = append ? CN.S.results : [];
+      CN.S.hasMore = false;
+      CN.openList({ kind: 'search', title: '“' + kw + '”' });
+      if (!append) CN.toast('没搜到，试试别的词');
+    }
+  });
+};
+
+/* ==========================================================================
+   四、导入
+   ========================================================================== */
+CN.doImport = function () {
+  var inp = CN.$('impInput');
+  var text = (inp.value || '').trim();
+  if (!text) { CN.toast('先粘贴一个链接'); return; }
+
+  /* 椰子分享文本（base64 JSON）*/
+  var wrapped = null;
+  try { wrapped = JSON.parse(atob(text)); } catch (e) {}
+  if (wrapped && wrapped.songs) {
+    var pl = CN.api.createPlaylist(wrapped.name || '导入的歌单');
+    if (!pl) { CN.toast('建歌单失败'); return; }
+    CN.api.addManyToPlaylist(pl.id, wrapped.songs);
+    CN.toast('已导入 ' + wrapped.songs.length + ' 首');
+    CN.renderHome();
+    return;
+  }
+
+  var box = CN.$('impResult');
+  var isMusicPlatform = /music\.example\.com|某音乐平台/i.test(text);
+  var isBili = /example\.com|link\.example\.com|bv[0-9A-Za-z]{10}|av\d+/i.test(text);
+
+  if (isMusicPlatform) {
+    box.innerHTML = '<div class="card" style="padding:var(--pad)"><div class="hand" style="font-size:1.375rem">正在读取外部歌单…</div>' +
+      '<div class="t-cap" style="margin-top:4px">只导入条目，音源在首次播放时匹配</div></div>';
+    CN.$('impProgWrap').style.display = '';
+    CN.$('impProg').style.setProperty('--p', '25%');
+    CN.api.importMusicPlaylist(text);
+    return;
+  }
+  if (isBili) {
+    box.innerHTML = '<div class="card" style="padding:var(--pad)"><div class="hand" style="font-size:1.375rem">正在识别 某弹幕网站链接…</div></div>';
+    CN.$('impProgWrap').style.display = '';
+    CN.$('impProg').style.setProperty('--p', '40%');
+    CN.api.importLink(text);
+    return;
+  }
+  CN.$('impProgWrap').style.display = 'none';
+  CN.toast('没认出这个链接，试试外部歌单或某弹幕网站链接');
+};
+
+/** 剪贴板自动检测（只在导入页做）*/
+CN.checkClipboard = function () {
+  var box = CN.$('importBanner');
+  if (!box) return;
+  var txt = CN.api.getClipboard();
+  var looks = txt && txt.length >= 8 &&
+    /music\.example\.com|example\.com|link\.example\.com|bv[0-9A-Za-z]{10}|某音乐平台/.test(txt);
+
+  if (!looks) {
+    box.innerHTML = '';
+    CN.$('tabDot').hidden = true;
+    return;
+  }
+  box.innerHTML = '<div class="card" style="padding:var(--gap);display:flex;align-items:center;gap:var(--gap);' +
+    'background:var(--accent-soft)">' + CN.iconSvg('link', 'svg') +
+    '<span class="t-cap trunc" style="flex:1 1 0">剪贴板里有个音乐链接</span>' +
+    '<button class="btn btn-sm btn-fill" id="clipUse">用这个</button></div>';
+  CN.$('tabDot').hidden = false;
+  CN.on('clipUse', 'click', function () {
+    CN.$('impInput').value = txt;
+    CN.doImport();
+    box.innerHTML = '';
+    CN.$('tabDot').hidden = true;
+  });
+};
+
+
+/* ===== 40-sheets.js ===== */
+/* ==========================================================================
+   椰子音乐 4 · 40-sheets.js
+   歌曲操作 / 歌单管理 / 换源 / 队列 / 详情 / 选择器
+   ========================================================================== */
+
+/* ==========================================================================
+   一、歌曲操作
+   ========================================================================== */
+CN.openSongSheet = function (song, idx) {
+  if (!song) return;
+  var isFav = CN.S.favs.has(song.bvid);
+  var inPl = CN.S.listKind === 'playlist' && CN.S.listId;
+
+  var hero = CN.coverUrl(song.cover, 160) ?
+    '<img src="' + CN.esc(CN.coverUrl(song.cover, 160)) + '" alt="">' +
+    '<div style="flex:1 1 0;min-width:0">' +
+    '<div class="hand trunc" style="font-size:1.25rem">' + CN.esc(CN.songTitle(song)) + '</div>' +
+    '<div class="t-cap trunc">' + CN.esc(CN.songArtist(song)) + '</div></div>' : '';
+
+  var html = '';
+  html += '<button class="sitem" data-a="play">' + CN.iconSvg('play') +
+    '<span class="sitem-txt">立即播放</span></button>';
+  html += '<button class="sitem" data-a="next">' + CN.iconSvg('list') +
+    '<span class="sitem-txt">下一首播放</span></button>';
+  html += '<button class="sitem" data-a="fav">' + CN.iconSvg('heart') +
+    '<span class="sitem-txt">' + (isFav ? '取消收藏' : '收藏') + '</span></button>';
+  html += '<button class="sitem" data-a="add">' + CN.iconSvg('add') +
+    '<span class="sitem-txt">加入歌单</span></button>';
+  html += '<button class="sitem" data-a="download">' + CN.iconSvg('download') +
+    '<span class="sitem-txt">下载到本地</span></button>';
+  if (CN.isUnmatched(song)) {
+    html += '<button class="sitem" data-a="swap">' + CN.iconSvg('swap') +
+      '<span class="sitem-txt">换个音源<span class="sitem-sub">这首还没匹配到音源</span></span></button>';
+  }
+  html += '<button class="sitem" data-a="detail">' + CN.iconSvg('info') +
+    '<span class="sitem-txt">歌曲详情</span></button>';
+  if (inPl) {
+    html += '<button class="sitem danger" data-a="del">' + CN.iconSvg('trash') +
+      '<span class="sitem-txt">从歌单移除</span></button>';
+  }
+
+  CN.swapTarget = song;
+  CN.swapIndex = idx;
+
+  CN.openSheet('歌曲操作', {
+    hero: hero,
+    html: html,
+    onMount: function (body) {
+      body.addEventListener('click', function (e) {
+        var b = e.target.closest('[data-a]');
+        if (!b) return;
+        var a = b.dataset.a;
+        if (a === 'play')        { CN.closeSheet(); CN.setQueue(CN.S.songs, idx); }
+        else if (a === 'next')  { CN.closeSheet(); CN.enqueueNext(song); }
+        else if (a === 'fav')   {
+          var now = CN.api.toggleFavorite(song);
+          CN.paintFav(); CN.closeSheet(); CN.refreshList();
+          CN.toast(now ? '已收藏' : '已取消收藏');
+        }
+        else if (a === 'add')      { CN.openPickSheet(song); }
+        else if (a === 'download') { CN.closeSheet(); CN.api.download(song); CN.toast('已加入下载队列'); }
+        else if (a === 'swap')     { CN.closeSheet(); CN.openSwapSheet(song); }
+        else if (a === 'detail')   { CN.closeSheet(); CN.openDetailSheet(song); }
+        else if (a === 'del')      { CN.removeFrom(song, idx); CN.closeSheet(); }
+      });
+    },
+  });
+};
+
+CN.removeFrom = function (song, idx) {
+  if (CN.S.listKind !== 'playlist' || !CN.S.listId) return;
+  CN.api.removeSongAt(CN.S.listId, song.bvid, idx);
+  CN.S.songs.splice(idx, 1);
+  CN.refreshList();
+  CN.renderHome();
+  CN.toast('已移除');
+};
+
+/* ==========================================================================
+   二、加入歌单
+   ========================================================================== */
+CN.openPickSheet = function (song) {
+  var pls = CN.api.getPlaylists() || [];
+  var html = pls.map(function (p) {
+    var has = (p.songs || []).some(function (s) { return s.bvid === song.bvid; });
+    return '<button class="sitem' + (has ? ' on' : '') + '" data-p="' + CN.esc(p.id) + '" data-has="' + has + '">' +
+      CN.iconSvg(has ? 'check' : 'music') +
+      '<span class="sitem-txt">' + CN.esc(p.name) +
+      '<span class="sitem-sub">' + (p.songs || []).length + ' 首' +
+      (has ? ' · 已在里面' : '') + '</span></span></button>';
+  }).join('');
+  html += '<button class="sitem" data-new="1">' + CN.iconSvg('add') +
+    '<span class="sitem-txt">新建歌单并加入</span></button>';
+
+  CN.openSheet('加入歌单', {
+    html: html,
+    onMount: function (body) {
+      body.addEventListener('click', function (e) {
+        if (e.target.closest('[data-new]')) { CN.newPlaylistSheet(song); return; }
+        var b = e.target.closest('[data-p]');
+        if (!b) return;
+        if (b.dataset.has === 'true') { CN.toast('已经在这个歌单里了'); return; }
+        CN.api.addToPlaylist(b.dataset.p, song);
+        CN.closeSheet();
+        CN.renderHome();
+        CN.toast('已加入');
+      });
+    },
+  });
+};
+
+CN.newPlaylistSheet = function (track) {
+  CN.openSheet('新建歌单', {
+    html: '<div style="padding:var(--pad)"><div class="searchbox">' +
+      '<input id="newPlName" placeholder="歌单名字" autocomplete="off" enterkeyhint="done"></div></div>',
+    foot: '<button class="btn btn-fill btn-block" id="newPlOk">创建</button>',
+    onMount: function () {
+      var inp = CN.$('newPlName');
+      setTimeout(function () { inp.focus(); }, 280);
+      var ok = function () {
+        var n = (inp.value || '').trim();
+        if (!n) { CN.toast('起个名字吧'); return; }
+        var p = CN.api.createPlaylist(n);
+        if (!p) { CN.toast('创建失败'); return; }
+        if (track) CN.api.addToPlaylist(p.id, track);
+        CN.closeSheet();
+        CN.renderHome();
+        CN.toast('已创建「' + n + '」');
+      };
+      CN.on('newPlOk', 'click', ok);
+      inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') ok(); });
+    },
+  });
+};
+
+/* ==========================================================================
+   三、歌单管理
+   ========================================================================== */
+CN.openPlaylistOps = function (pid) {
+  var p = (CN.api.getPlaylists() || []).filter(function (x) { return x.id === pid; })[0];
+  if (!p) return;
+  var n = (p.songs || []).length;
+
+  var html = '<button class="sitem" data-a="play">' + CN.iconSvg('play') +
+    '<span class="sitem-txt">播放全部<span class="sitem-sub">' + n + ' 首</span></span></button>';
+  html += '<button class="sitem" data-a="share">' + CN.iconSvg('share') +
+    '<span class="sitem-txt">分享歌单<span class="sitem-sub">复制成一段文本</span></span></button>';
+  if (!p.fixed) {
+    html += '<button class="sitem" data-a="rename">' + CN.iconSvg('text') +
+      '<span class="sitem-txt">重命名</span></button>';
+    html += '<button class="sitem danger" data-a="del">' + CN.iconSvg('trash') +
+      '<span class="sitem-txt">删除歌单<span class="sitem-sub">连同 ' + n + ' 首一起删除</span></span></button>';
+  }
+
+  CN.plOps = pid;
+  CN.openSheet(p.name, {
+    html: html,
+    onMount: function (body) {
+      body.addEventListener('click', function (e) {
+        var b = e.target.closest('[data-a]');
+        if (!b) return;
+        var a = b.dataset.a;
+        if (a === 'play')  { CN.closeSheet(); if (n) CN.setQueue(p.songs, 0); else CN.toast('歌单是空的'); }
+        else if (a === 'share')  { CN.sharePlaylist(pid); CN.closeSheet(); }
+        else if (a === 'rename') { CN.renameSheet(pid); }
+        else if (a === 'del')    { CN.confirmDelete(pid); }
+      });
+    },
+  });
+};
+
+CN.renameSheet = function (pid) {
+  var p = (CN.api.getPlaylists() || []).filter(function (x) { return x.id === pid; })[0];
+  CN.openSheet('重命名歌单', {
+    html: '<div style="padding:var(--pad)"><div class="searchbox">' +
+      '<input id="rnName" value="' + CN.esc(p ? p.name : '') + '" autocomplete="off" enterkeyhint="done"></div></div>',
+    foot: '<button class="btn btn-fill btn-block" id="rnOk">保存</button>',
+    onMount: function () {
+      var inp = CN.$('rnName');
+      setTimeout(function () { inp.focus(); inp.select(); }, 280);
+      var ok = function () {
+        var n = (inp.value || '').trim();
+        if (!n) { CN.toast('名字不能为空'); return; }
+        CN.api.renamePlaylist(pid, n);
+        CN.closeSheet();
+        if (CN.S.listKind === 'playlist' && CN.S.listId === pid) {
+          CN.S.listTitle = n; CN.renderList(); CN.syncTop();
+        }
+        CN.renderHome();
+        CN.toast('已重命名');
+      };
+      CN.on('rnOk', 'click', ok);
+      inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') ok(); });
+    },
+  });
+};
+
+CN.sharePlaylist = function (pid) {
+  var p = (CN.api.getPlaylists() || []).filter(function (x) { return x.id === pid; })[0];
+  if (!p) return;
+  var lines = ['【椰子音乐】' + p.name];
+  (p.songs || []).forEach(function (s, i) {
+    lines.push((i + 1) + '. ' + CN.songTitle(s) + ' — ' + CN.songArtist(s));
+  });
+  var text = lines.join('\n');
+
+  var ex = CN.api.exportPlaylistTxt(pid);
+  if (ex && ex.uri && CN.api.shareFile(ex.uri, ex.name || (p.name + '.txt'))) {
+    CN.toast('已打开分享'); return;
+  }
+  if (CN.api.shareText(text)) { CN.toast('已打开分享'); return; }
+  CN.api.copyText(text);
+  CN.toast('歌单已复制，粘贴给朋友就行');
+};
+
+CN.confirmDelete = function (pid) {
+  var p = (CN.api.getPlaylists() || []).filter(function (x) { return x.id === pid; })[0];
+  if (!p) return;
+  CN.openSheet('删除歌单', {
+    html: '<div style="padding:var(--gap-xl) var(--pad);text-align:center">' +
+      '<div class="hand" style="font-size:1.75rem">删除「' + CN.esc(p.name) + '」？</div>' +
+      '<div class="t-cap" style="margin-top:8px">' + (p.songs || []).length +
+      ' 首会一起消失，删了找不回来</div></div>',
+    foot: '<div style="display:flex;gap:var(--gap)">' +
+      '<button class="btn" style="flex:1" id="delNo">取消</button>' +
+      '<button class="btn btn-fill" style="flex:1;background:#E5484D" id="delYes">删除</button></div>',
+    onMount: function () {
+      CN.on('delNo', 'click', CN.closeSheet);
+      CN.on('delYes', 'click', function () {
+        CN.api.deletePlaylist(pid);
+        CN.closeSheet();
+        if (CN.S.view === 'list') CN.go('home', true);
+        CN.renderHome();
+        CN.toast('已删除');
+      });
+    },
+  });
+};
+
+/* ==========================================================================
+   四、歌曲详情
+   ========================================================================== */
+CN.openDetailSheet = function (s) {
+  var rows = [
+    ['歌名', CN.songTitle(s)],
+    ['歌手', CN.songArtist(s)],
+    ['时长', CN.fmt(s.duration)],
+    ['UP 主', s.owner || '无'],
+    ['播放量', s.play ? CN.fmtPlays(s.play) : '无'],
+    ['弹幕', s.danmaku != null ? s.danmaku : '无'],
+    ['收藏', s.favorites != null ? s.favorites : '无'],
+    ['来源', CN.isUnmatched(s) ? '待匹配（外部歌单导入占位）' : '某弹幕网站 ' + (s.bvid || '')],
+    ['CID', s.cid || '无'],
+    ['匹配分', s.score != null ? s.score : '无'],
+  ];
+  var html = rows.map(function (r) {
+    return '<div class="sitem" style="cursor:default">' +
+      '<span class="sitem-txt"><span class="t-cap">' + r[0] + '</span>' +
+      '<span class="trunc" style="display:block">' + CN.esc(r[1]) + '</span></span></div>';
+  }).join('');
+
+  CN.openSheet('歌曲详情', {
+    html: html,
+    foot: '<button class="btn btn-block" id="dtOpen">在 某弹幕网站打开</button>',
+    onMount: function () {
+      CN.on('dtOpen', 'click', function () {
+        if (CN.isUnmatched(s)) { CN.toast('还没匹配到音源'); return; }
+        CN.api.openUrl('https://www.example.com/video/' + s.bvid);
+        CN.closeSheet();
+      });
+    },
+  });
+};
+
+/* ==========================================================================
+   五、手动换源（只在用户主动点开时才搜）
+   ========================================================================== */
+CN.openSwapSheet = function (song) {
+  var kw = CN.cleanQuery(CN.songTitle(song) + ' ' + CN.songArtist(song));
+  CN.swapSong = song;
+
+  CN.openSheet('换个音源', {
+    html: '<div style="padding:var(--pad);border-bottom:2px solid var(--ink)">' +
+      '<div class="searchbox"><input id="swIn" placeholder="搜歌手 + 歌名" ' +
+      'value="' + CN.esc(kw) + '" autocomplete="off" enterkeyhint="search"></div>' +
+      '<div class="t-cap" style="margin-top:6px">手动搜索只查这一首</div></div>' +
+      '<div id="swList"></div>',
+    onMount: function () {
+      var doS = CN.debounce(function () { CN.swapSearch(CN.$('swIn').value); }, 450);
+      CN.on('swIn', 'input', doS);
+      CN.on('swIn', 'keydown', function (e) {
+        if (e.key === 'Enter') CN.swapSearch(CN.$('swIn').value);
+      });
+      CN.swapSearch(kw);
+    },
+  });
+};
+
+CN.swapSearch = function (kw) {
+  var box = CN.$('swList');
+  if (!box) return;
+  box.innerHTML = '<div class="empty"><div class="spinner"></div><span class="t-cap">找候选中…</span></div>';
+
+  CN.http.search(kw, 1).then(function (r) {
+    if (!r || !r.ok || !r.list || !r.list.length) {
+      box.innerHTML = '<div class="empty">' + CN.iconSvg('search', 'svg') +
+        '<span class="t-cap">没找到候选<br>换个关键词再试</span></div>';
+      return;
+    }
+    box.innerHTML = '';
+    r.list.forEach(function (item) {
+      box.appendChild(CN.sItem('music',
+        CN.songTitle(item) + ' — ' + CN.songArtist(item),
+        CN.fmt(item.duration) + ' · ' + CN.fmtPlays(item.play) + '播放',
+        function () { CN.applySwap(item); }
+      ));
+    });
+  });
+};
+
+CN.applySwap = function (pick) {
+  var old = CN.swapSong;
+  if (!old) return;
+  var keepCur = CN.S.cur;
+
+  var fresh = {
+    bvid: pick.bvid, cid: pick.cid,
+    title: pick.title, artist: pick.artist,
+    cover: pick.cover || old.cover,
+    duration: pick.duration || old.duration,
+    owner: pick.owner, play: pick.play, danmaku: pick.danmaku,
+    favorites: pick.favorites, unmatched: false,
+  };
+  CN.syncQueueSource(old.bvid, fresh);
+  CN.S.track = fresh;
+  CN.S.cur = keepCur;
+
+  CN.closeSheet();
+  CN.loadLyrics(fresh);
+  CN.paint();
+  CN.refreshList();
+  CN.renderHome();
+  CN.toast('已换成新音源');
+};
+
+/* ==========================================================================
+   六、播放队列
+   ========================================================================== */
+CN.openQueueSheet = function () {
+  CN.openSheet('播放队列', {
+    html: '<div id="qBox"></div>',
+    onMount: function (body) {
+      CN.renderQueue(CN.$('qBox'));
+      CN.on('qBox', 'click', function (e) {
+        var r = e.target.closest('[data-q]');
+        if (!r) return;
+        var i = Number(r.dataset.q);
+        CN.S.queue = CN.S.queue;
+        CN.S.qIndex = i;
+        CN.S.track = CN.S.queue[i];
+        CN.N.call('playQueue', JSON.stringify(CN.S.queue), i);
+        CN.closeSheet();
+        CN.paint();
+      });
+    },
+  });
+};
+
+/* ==========================================================================
+   七、多选器
+   ========================================================================== */
+CN.openPicker = function (title, opts, cur, cb) {
+  var html = opts.map(function (o) {
+    return '<button class="sitem' + (o.v === cur ? ' on' : '') + '" data-v="' + CN.esc(o.v) + '">' +
+      CN.iconSvg(o.v === cur ? 'check' : 'rows') +
+      '<span class="sitem-txt">' + CN.esc(o.n) + '</span></button>';
+  }).join('');
+  CN.openSheet(title, {
+    html: html,
+    onMount: function (body) {
+      body.addEventListener('click', function (e) {
+        var b = e.target.closest('[data-v]');
+        if (!b) return;
+        cb(b.dataset.v);
+        CN.closeSheet();
+      });
+    },
+  });
+};
+
+
+/* ===== 50-settings.js ===== */
+/* ==========================================================================
+   椰子音乐 4 · 50-settings.js
+   账号 / 外观（四种皮肤 + 主题色）/ 播放 / 关于
+   --------------------------------------------------------------------------
+   旧版 22 项设置全部保留：
+     保留 —— 主题色12色、深浅色、响度均衡、播放模式、下载目录、
+             某弹幕网站登录/退出、重新检测、通知权限、关于、启动图标切换(旧版不可用)
+     升级 —— 行高旋钮→列表密度3档；歌名字号旋钮→界面字号4档
+     新增 —— 四种皮肤、界面字号、毛玻璃开关、重置显示设置
+     删除 —— 菜单栏位置（改响应式自动切换）、首页列数（改 auto-fill）
+   ========================================================================== */
+
+CN.settings = {};
+
+CN.loadSettings = function () {
+  var s = CN.api.getSettings() || {};
+  CN.settings.skin       = s.skin || 'paper';
+  CN.settings.theme      = s.theme || 'paper';
+  CN.settings.accent     = s.accent || '#FF6B4A';
+  CN.settings.fontsize   = s.fontsize || 'm';
+  CN.settings.density    = s.density || 'n';
+  CN.settings.lineDouble = (s.lineDouble === undefined) ? true : !!s.lineDouble;
+  CN.settings.playMode   = s.playMode || 'list';     /* 修复：旧版存了不读回 */
+  CN.settings.loudness   = !!s.loudness;             /* 修复：旧版只调不存 */
+  CN.settings.downloadDir = s.downloadDir || '';
+
+  CN.S.mode = CN.settings.playMode;
+  CN.S.loud = CN.settings.loudness;
+  CN.applySettings();
+};
+
+CN.applySettings = function () {
+  var html = document.documentElement;
+
+  /* 皮肤 */
+  html.setAttribute('data-skin', CN.settings.skin);
+
+  /* 字号（4 档，覆盖 clamp 基准）*/
+  var fs = { s: '14px', m: '15.5px', l: '17px', xl: '18.5px' }[CN.settings.fontsize] || '15.5px';
+  html.style.setProperty('font-size', fs);
+
+  /* 列表密度 → 行高令牌 */
+  var rowH = { c: '54px', n: '60px', r: '70px' }[CN.settings.density] || '60px';
+  html.style.setProperty('--row-h', rowH);
+
+  /* 主题色 */
+  if (CN.settings.accent) html.style.setProperty('--accent', CN.settings.accent);
+
+  /* 线条样式：双实线（手绘叠画）/ 单实线。
+     复线的 opacity 全部走 calc(var(--line-alpha) * var(--line-double))，
+     这里只需切这一个变量，全站 7 处复线同时生效。 */
+  html.style.setProperty('--line-double', CN.settings.lineDouble ? '1' : '0');
+
+  /* 状态栏配色跟随皮肤。
+     读计算值失败（老 WebView 不支持 getComputedStyle 或变量未落地）时
+     不能让整个应用崩 —— 静默跳过，状态栏保持系统默认。 */
+  try {
+    if (typeof getComputedStyle === 'function') {
+      var bg = getComputedStyle(html).getPropertyValue('--paper').trim();
+      if (bg) CN.api.setStatusBarColor(bg);
+    }
+  } catch (e) {
+    if (window.console) console.warn('[外观] 状态栏配色同步跳过:', e);
+  }
+};
+
+CN.resetDisplay = function () {
+  CN.settings.skin = 'paper';
+  CN.settings.accent = '#FF6B4A';
+  CN.settings.fontsize = 'm';
+  CN.settings.density = 'n';
+  CN.settings.lineDouble = true;
+  ['skin', 'accent', 'fontsize', 'density', 'lineDouble'].forEach(function (k) {
+    CN.api.setSetting(k, CN.settings[k]);
+  });
+  CN.applySettings();
+  CN.renderSettings();
+  CN.toast('显示设置已重置');
+};
+
+/* ==========================================================================
+   账号
+   ========================================================================== */
+CN.refreshLogin = function () {
+  var u = CN.api.getUname() || { logged_in: false, uname: '' };
+  CN.S.login = u;
+  var n = CN.$('uName'), s = CN.$('uSub'), b = CN.$('loginBtn');
+  if (u.logged_in && u.uname) {
+    if (n) n.textContent = u.uname;
+    if (s) s.textContent = '已登录 某弹幕网站，可同步收藏';
+    if (b) b.textContent = '退出';
+  } else {
+    if (n) n.textContent = '未登录';
+    if (s) s.textContent = '登录后可同步 某弹幕网站收藏';
+    if (b) b.textContent = '登录';
+  }
+};
+
+/* ==========================================================================
+   行构造器
+   ========================================================================== */
+function rowTap(icon, title, sub, value, fn) {
+  var el = document.createElement('div');
+  el.className = 'srow-set';
+  el.setAttribute('role', 'button');
+  el.tabIndex = 0;
+  el.innerHTML =
+    '<span class="srow-set-ico">' + CN.iconSvg(icon) + '</span>' +
+    '<span class="srow-set-txt"><div class="srow-name">' + title + '</div>' +
+    (sub ? '<div class="t-cap">' + sub + '</div>' : '') + '</span>' +
+    (value ? '<span class="srow-set-val">' + CN.esc(value) + '</span>' : '') +
+    CN.iconSvg('next', 'svg svg-sm');
+  var go = function () { fn(); };
+  el.addEventListener('click', go);
+  el.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); }
+  });
+  return el;
+}
+
+function rowSwitch(icon, title, sub, on, fn) {
+  var el = document.createElement('div');
+  el.className = 'srow-set';
+  el.setAttribute('role', 'switch');
+  el.tabIndex = 0;
+  el.innerHTML =
+    '<span class="srow-set-ico">' + CN.iconSvg(icon) + '</span>' +
+    '<span class="srow-set-txt"><div class="srow-name">' + title + '</div>' +
+    (sub ? '<div class="t-cap">' + sub + '</div>' : '') + '</span>' +
+    '<span class="switch" aria-checked="' + (on ? 'true' : 'false') + '"></span>';
+  var sw = el.querySelector('.switch');
+  var tg = function () {
+    var now = sw.getAttribute('aria-checked') !== 'true';
+    sw.setAttribute('aria-checked', now ? 'true' : 'false');
+    fn(now);
+  };
+  el.addEventListener('click', tg);
+  el.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tg(); }
+  });
+  return el;
+}
+
+/* ==========================================================================
+   渲染
+   ========================================================================== */
+CN.renderSettings = function () {
+  CN.refreshLogin();
+  CN.renderSetRows();
+  CN.renderPlayRows();
+  CN.renderAboutRows();
+};
+
+/* ---------- 外观 ---------- */
+CN.renderSetRows = function () {
+  var box = CN.$('setRows');
+  if (!box) return;
+  box.innerHTML = '';
+
+  /* 四种皮肤 */
+  var sk = document.createElement('div');
+  sk.className = 'srow-set';
+  sk.style.display = 'block';
+  sk.innerHTML = '<div class="srow-set-txt"><div class="srow-name">皮肤风格</div>' +
+    '<div class="t-cap">换一整套配色和线条</div></div>' +
+    '<div class="chips">' + CN.SKINS.map(function (s) {
+      return '<button class="chip' + (s.v === CN.settings.skin ? ' on' : '') +
+        '" data-skin="' + s.v + '">' + s.n + '</button>';
+    }).join('') + '</div>';
+  sk.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-skin]');
+    if (!b) return;
+    CN.settings.skin = b.dataset.skin;
+    CN.api.setSetting('skin', CN.settings.skin);
+    CN.applySettings();
+    CN.renderSetRows();
+  });
+  box.appendChild(sk);
+
+  /* 主题色（12 色，保留旧版功能）*/
+  var colors = [
+    { v: '#FF6B4A', n: '珊瑚橘' }, { v: '#F5426C', n: '玫红' },
+    { v: '#FF8A3D', n: '暖橙' },   { v: '#FFC93D', n: '马克笔黄' },
+    { v: '#8BD450', n: '青柠' },   { v: '#31C27C', n: '椰子绿' },
+    { v: '#1BC5C8', n: '薄荷' },   { v: '#3B7DD8', n: '手绘蓝' },
+    { v: '#6C8CFF', n: '靛蓝' },   { v: '#A66BFF', n: '霓紫' },
+    { v: '#FF6BC5', n: '泡泡糖' }, { v: '#8B7355', n: '可可' },
+  ];
+  var cw = document.createElement('div');
+  cw.className = 'srow-set';
+  cw.style.display = 'block';
+  cw.innerHTML = '<div class="srow-set-txt" style="margin-bottom:10px">' +
+    '<div class="srow-name">主题色</div>' +
+    '<div class="t-cap">按钮、进度条、选中态都用它</div></div>' +
+    '<div class="swatches">' + colors.map(function (c) {
+      return '<button class="swatch' + (c.v === CN.settings.accent ? ' on' : '') +
+        '" data-c="' + c.v + '" style="background:' + c.v + '" title="' + c.n +
+        '" aria-label="' + c.n + '"></button>';
+    }).join('') + '</div>';
+  cw.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-c]');
+    if (!b) return;
+    CN.settings.accent = b.dataset.c;
+    CN.api.setSetting('accent', CN.settings.accent);
+    CN.applySettings();
+    CN.renderSetRows();
+  });
+  box.appendChild(cw);
+
+  /* 界面字号 4 档 */
+  var fonts = [{ v: 's', n: '小' }, { v: 'm', n: '标准' }, { v: 'l', n: '大' }, { v: 'xl', n: '特大' }];
+  var f = fonts.filter(function (x) { return x.v === CN.settings.fontsize; })[0];
+  box.appendChild(rowTap('text', '界面字号', '影响全局文字大小', f ? f.n : '标准', function () {
+    CN.openPicker('界面字号', fonts, CN.settings.fontsize, function (v) {
+      CN.settings.fontsize = v;
+      CN.api.setSetting('fontsize', v);
+      CN.applySettings();
+      CN.renderSetRows();
+    });
+  }));
+
+  /* 列表密度 3 档 */
+  var dens = [{ v: 'c', n: '紧凑' }, { v: 'n', n: '标准' }, { v: 'r', n: '宽松' }];
+  var d = dens.filter(function (x) { return x.v === CN.settings.density; })[0];
+  box.appendChild(rowTap('rows', '列表密度', '歌曲行的高度', d ? d.n : '标准', function () {
+    CN.openPicker('列表密度', dens, CN.settings.density, function (v) {
+      CN.settings.density = v;
+      CN.api.setSetting('density', v);
+      CN.applySettings();
+      CN.renderSetRows();
+    });
+  }));
+
+  /* 线条样式：双实线（手绘叠画）/ 单实线
+     —— 切这一个开关就能把全站 7 处复线同时开关掉 */
+  box.appendChild(rowSwitch('sketch', '双实线边框',
+    CN.settings.lineDouble ? '双线叠画，手绘感' : '单实线，干净利落',
+    !!CN.settings.lineDouble,
+    function (on) {
+      CN.settings.lineDouble = on;
+      CN.api.setSetting('lineDouble', on);
+      CN.applySettings();
+    }
+  ));
+
+  /* 深浅色（映射到皮肤）*/
+  box.appendChild(rowSwitch('sun', '深色外观',
+    CN.settings.skin === 'dark' || CN.settings.skin === 'neon' ? '当前是深色' : '当前是浅色',
+    CN.settings.skin === 'dark' || CN.settings.skin === 'neon',
+    function (on) {
+      CN.settings.skin = on ? 'dark' : 'paper';
+      CN.api.setSetting('skin', CN.settings.skin);
+      CN.applySettings();
+      CN.renderSetRows();
+    }));
+
+  box.appendChild(rowTap('palette', '重置显示设置', '皮肤、字号、密度、主题色全部复位', null,
+    CN.resetDisplay));
+};
+
+/* ---------- 播放 ---------- */
+CN.renderPlayRows = function () {
+  var box = CN.$('playRows');
+  if (!box) return;
+  box.innerHTML = '';
+
+  var m = CN.MODE[CN.settings.playMode] || CN.MODE.list;
+  box.appendChild(rowTap('loop', '播放模式', '顺序 / 单曲 / 随机', m.text, function () {
+    CN.openPicker('播放模式',
+      [{ v: 'list', n: '顺序播放' }, { v: 'single', n: '单曲循环' }, { v: 'random', n: '随机播放' }],
+      CN.settings.playMode,
+      function (v) {
+        CN.setMode(v);
+        CN.settings.playMode = v;
+        CN.renderPlayRows();
+        CN.paint();
+      });
+  }));
+
+  box.appendChild(rowSwitch('volume', '响度均衡', '把过小过大的音量拉平', CN.settings.loudness,
+    function (on) { CN.setLoud(on); CN.renderPlayRows(); }));
+
+  var ddir = CN.settings.downloadDir || CN.api.getDownloadDir();
+  CN.settings.downloadDir = ddir;
+  box.appendChild(rowTap('folder', '下载目录', '音乐保存在手机存储里', null, function () {
+    CN.api.copyText(ddir);
+    CN.toast('路径已复制');
+  }));
+
+  var hasNotif = CN.api.hasNotifPermission();
+  box.appendChild(rowSwitch('bell', '通知栏控制',
+    hasNotif ? '已允许，后台也能控制' : '需要授权才能控制', hasNotif,
+    function (on) {
+      if (on) CN.api.requestNotifPermission();
+      else CN.api.openNotifSettings();
+    }));
+
+  box.appendChild(rowTap('refresh', '重新检测登录',
+    CN.S.login.logged_in ? '当前已登录' : '当前未登录', null, function () {
+      CN.api.recheckLogin();
+      setTimeout(function () { CN.refreshLogin(); CN.toast('已重新检测'); }, 700);
+    }));
+};
+
+/* ---------- 关于 ---------- */
+CN.renderAboutRows = function () {
+  var box = CN.$('aboutRows');
+  if (!box) return;
+  box.innerHTML = '';
+
+  box.appendChild(rowTap('music', '音源说明', '音频来自 某弹幕网站 UP 主的视频', null, function () {
+    CN.openSheet('音源说明', {
+      html: '<div style="padding:var(--gap-xl) var(--pad);line-height:1.8">' +
+        '<p>椰子音乐用 某弹幕网站上的音乐视频当音源，播放时自动取最高音质。</p>' +
+        '<p style="margin-top:12px">外部歌单导入后歌曲是「占位」的，' +
+        '<b>第一次播放才会去匹配音源</b>，所以刚导进来别急。</p>' +
+        '<p style="margin-top:12px">哪首匹配不上，在播放页点「换源」自己挑一个。</p></div>',
+    });
+  }));
+
+  box.appendChild(rowTap('info', '关于椰子音乐', '版本 ' + CN.VERSION, null, function () {
+    CN.openSheet('关于', {
+      html: '<div style="padding:var(--gap-xl);text-align:center">' +
+        '<div style="font-size:3rem;margin-bottom:12px">🥥</div>' +
+        '<div class="hand" style="font-size:2rem">椰子音乐</div>' +
+        '<div class="t-cap" style="margin-top:4px">版本 ' + CN.VERSION + '</div>' +
+        '<div class="t-cap" style="margin-top:20px;line-height:1.8">' +
+        '手绘风格界面全面重做<br>功能一个没少</div></div>',
+    });
+  }));
+};
+
+
+/* ===== 60-squircle-apply.js ===== */
+/* ==========================================================================
+   squircle-apply.js — 连续圆角（超椭圆）落地到真实界面
+   --------------------------------------------------------------------------
+   【苹果那种圆角】
+   Continuous Corners，中文「连续圆角」，基础是 Squircle 超椭圆，n≈5。
+   和普通 border-radius 的差别在**曲率连续**：
+     普通圆角 = 直线段 + 圆弧段在切点硬接，曲率从 0 突变成 1/r → 有接缝
+     连续圆角 = 曲率从 0 平滑升到峰值再回0，全程无跳变
+
+   【本版方案：填充层 + 描边 overlay，两层各司其职】
+   走过的弯路（别再走）：
+     1) clip-path 裁形状 → 会把 border 外半圈切掉，弯角线宽变细
+     2) border 加倍补 → 挤掉 padding，布局变形
+     3) background-image 画「描边环」+ background-origin:border-box
+        → 实测在 2.5px 描边下描边环整体错位、在圆角处裁断，
+          4 倍放大看是断成黑杠（padding-box 比 border-box 窄 2×2.5px）
+   现在用的：元素本身只负责**填充**（background-color / background-image 原样不动），
+   插一个 overlay 子元素专门画**描边**，用 `inset:0` + `center/100% 100%` 定位。
+   描边和填充各自独立，互不干扰，也不需要任何偏移补偿。
+
+   【降级】
+   浏览器不支持 SVG background 或 JS 出错时 → 元素保留原生 border-radius，
+   界面照常可用（只是圆角不是连续的）。
+   ========================================================================== */
+
+(function () {
+  'use strict';
+
+  /* 需要升级的元素：凡是「有描边 + 有圆角」的容器。
+       【已剔除】下面这些显式写了 border:0，本身就不该有描边：
+         .srow-more / .pp-ico / .pp-act / .searchbox input / .sec-more / .sitem / .sr
+       判断标准：这个选择器会不会和「带描边的组件」挂在同一元素上。
+       —— .card-btn 就是反例，它是修饰类，`border:0` 把 .card 的描边整个覆盖掉，
+          导致入口卡/歌单卡完全没描边（这个问题已经修掉）。
+       【动态渲染的卡片】用 [data-sq-r] 手动标记。 */
+  var SEL = [
+    '.card', '.mini', '.tabbar', '.tab', '.chip', '.btn', '.ibtn',
+    '.searchbox', '.sec-btn', '.sheet', '.pp-disc',
+    '.ent-cover', '.ent-play', '.srow-cover',
+    '.toast', '.swatch', '.pl-card', '.hist-chip',
+    '.cnt', '.dot', '.spinner', '.mini-cover'
+  ].join(',');
+
+  var OVERLAY = 'sq-line';      /* 描边层的类名 */
+  var SVGNS = 'http://www.w3.org/2000/svg';
+
+  function svgURI(svg) {
+    return 'url("data:image/svg+xml,' + encodeURIComponent(svg).replace(/'/g, '%27') + '")';
+  }
+
+  /* 生成描边 SVG —— 主描边 + 内侧复线，两条都用同一条超椭圆路径。
+     【为什么复线必须在这里画，不能用 CSS ::before】
+     原来的双线叠画是 `::before { inset:3px; border-radius:15px; transform:rotate(.5deg) }` ——
+     那是**普通圆角 + 旋转**，和主描边的超椭圆形状对不上，
+     旋转后四角还会伸出/缩进主描边 → 卡片右上右下出现缺口。
+     现在两条线共用同一条超椭圆数据：
+       主描边 = 超椭圆(w, h, r)
+       复线   = 超椭圆(w-2*gap, h-2*gap, r-gap)，只偏移不旋转
+     形状完全贴合，不可能出现缺口。
+     --line-double=0 时复线不画（设置里的「双实线边框」开关）。 */
+  function strokeSVG(w, h, r, sw, ink, double) {
+    var SQ = window.SQ;
+    var svg =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '"' +
+      ' viewBox="0 0 ' + w + ' ' + h + '">';
+    svg += '<path d="' + SQ.path(w, h, r, SQ.N) + '" fill="none" stroke="' + ink +
+           '" stroke-width="' + sw + '" stroke-linejoin="round"/>';
+    if (double) {
+      var gap = 3 + sw / 2;              /* 主描边内侧再让开一点 */
+      var iw = w - gap * 2, ih = h - gap * 2;
+      if (iw > 4 && ih > 4) {
+        svg += '<path d="' + SQ.path(iw, ih, Math.max(0, r - gap), SQ.N) + '" fill="none"' +
+               ' stroke="' + ink + '" stroke-width="' + (sw * 0.5) +
+               '" stroke-linejoin="round" opacity="0.3"' +
+               ' transform="translate(' + gap + ' ' + gap + ')"/>';
+      }
+    }
+    return svgURI(svg + '</svg>');
+  }
+
+  /* 单/双线开关：读 --line-double（设置 → 外观 → 「双实线边框」）。
+     getComputedStyle 读变量在老 WebView 可能失败 → try/catch 兜住，失败按开处理。 */
+  function doubleOn() {
+    try {
+      var v = getComputedStyle(document.documentElement)
+        .getPropertyValue('--line-double').trim();
+      return v !== '0';
+    } catch (e) { return true; }
+  }
+
+  function radiusOf(el, cs) {
+    var ex = el.getAttribute && el.getAttribute('data-sq-r');
+    if (ex) return parseFloat(ex);
+
+    var r = cs.borderTopLeftRadius || '0px';
+    if (/%/.test(r)) {
+      var rect = el.getBoundingClientRect();
+      var base = parseFloat(r);
+      return isNaN(base) ? 0 : Math.min(rect.width, rect.height) * base / 100;
+    }
+    var m = /(-?[\d.]+)px/.exec(r);
+    return m ? parseFloat(m[1]) : 0;
+  }
+
+  function applyOne(el) {
+    if (!el || el.nodeType !== 1) return false;
+    if (el.hasAttribute && el.hasAttribute('data-sq')) return false;
+    if (el.tagName && String(el.tagName).toLowerCase() === 'svg') return false;
+
+    var rect = el.getBoundingClientRect();
+    if (rect.width < 4 || rect.height < 4) return false;
+
+    var cs = getComputedStyle(el);
+    if (cs.display === 'none' || cs.visibility === 'hidden') return false;
+
+    /* 【关键】只在「确实有描边」时才接管。
+       border:0 的元素（图标钮/输入框）读到 sw=0，直接跳过，
+       让它们保持透明无框——否则会凭空多出一圈线。 */
+    var sw = parseFloat(cs.borderTopWidth) || 0;
+    if (sw <= 0) return false;
+
+    var radius = radiusOf(el, cs);
+    if (!radius || radius < 3) return false;
+
+    var w = Math.round(rect.width);
+    var h = Math.round(rect.height);
+    radius = Math.min(radius, w / 2, h / 2);
+
+    var ink = cs.borderTopColor;
+    if (!ink || ink === 'rgba(0, 0, 0, 0)' || ink === 'transparent') ink = 'currentColor';
+
+    /* 【必须 inset:-sw，这是实测踩到的坑】
+       overlay 是子元素，position:absolute + inset:0 定位到的是
+       **padding box**，而父元素有 2.5px 的 border →
+       实测父元素 436×46，overlay 只有 431×41，正好差 2×2.5px。
+       描边因此画在padding box 上，比元素边界内缩一圈，圆角处就错位。
+       用 inset:-sw 向外补回 border 宽度，overlay 尺寸就和元素 border-box 完全一致。
+       SVG 的width/height 也按 border-box 尺寸（即 rect.width）生成。 */
+    var line = document.createElement('i');
+    line.className = OVERLAY;
+    line.setAttribute('aria-hidden', 'true');
+    line.style.cssText =
+      'position:absolute;inset:' + (-sw) + 'px;pointer-events:none;z-index:2;' +
+      'background:' + strokeSVG(w, h, radius, sw, ink, doubleOn()) +
+      ' center/' + w + 'px ' + h + 'px no-repeat';
+
+    /* 原生 border 宽度保留（它还要参与布局计算），只把颜色去掉，
+       视觉交给 overlay —— 这样盒子尺寸、padding 全部零变化。 */
+    el.style.borderTopColor = 'transparent';
+    el.style.borderRightColor = 'transparent';
+    el.style.borderBottomColor = 'transparent';
+    el.style.borderLeftColor = 'transparent';
+
+    el.appendChild(line);
+    el.setAttribute('data-sq', '1');
+    return true;
+  }
+
+  function applyAll(root) {
+    var scope = root || document;
+    var list;
+    try { list = scope.querySelectorAll(SEL + ',[data-sq-r]'); }
+    catch (e) { return 0; }
+    var n = 0;
+    for (var i = 0; i < list.length; i++) {
+      if (applyOne(list[i])) n++;
+    }
+    return n;
+  }
+
+  /* 撤销：移除 overlay、恢复 border 颜色 */
+  function reset() {
+    var lines = document.querySelectorAll('.' + OVERLAY);
+    for (var i = 0; i < lines.length; i++) {
+      if (lines[i].parentNode) lines[i].parentNode.removeChild(lines[i]);
+    }
+    var done = document.querySelectorAll('[data-sq]');
+    for (var j = 0; j < done.length; j++) {
+      done[j].removeAttribute('data-sq');
+      done[j].style.borderTopColor = '';
+      done[j].style.borderRightColor = '';
+      done[j].style.borderBottomColor = '';
+      done[j].style.borderLeftColor = '';
+    }
+  }
+
+  function reapply() { reset(); applyAll(); }
+
+  var api = {
+    apply: applyOne,
+    applyAll: applyAll,
+    reset: reset,
+    reapply: reapply
+  };
+
+  /* ======================================================================
+     自动兜底：界面是动态渲染的（歌单/歌曲行/弹层随时插入），
+     逐个渲染函数手动调 applyAll 一定会漏 → 用观察器统一处理。
+     ====================================================================== */
+  function schedule() {
+    if (api.__pending) return;
+    api.__pending = true;
+    var raf = window.requestAnimationFrame || function (f) { return setTimeout(f, 16); };
+    raf(function () {
+      api.__pending = false;
+      api.__running = true;
+      applyAll();
+      setTimeout(function () { api.__running = false; }, 0);
+    });
+  }
+
+  if (window.MutationObserver) {
+    var mo = new MutationObserver(function (records) {
+      /* overlay 是自己插的，会再次触发观察器 → 必须排除，否则死循环 */
+      var selfCaused = true;
+      for (var i = 0; i < records.length; i++) {
+        var added = records[i].addedNodes;
+        var allOurs = added.length > 0;
+        for (var j = 0; j < added.length; j++) {
+          var n = added[j];
+          if (!n.nodeType) { allOurs = false; break; }
+          if (!(n.nodeType === 1 && n.classList && n.classList.contains(OVERLAY))) {
+            allOurs = false; break;
+          }
+        }
+        if (!allOurs) { selfCaused = false; break; }
+      }
+      if (selfCaused || api.__running) return;
+      schedule();
+    });
+    mo.observe(document.documentElement, { childList: true, subtree: true });
+    api.__mo = mo;
+  }
+
+  /* 尺寸变化：旋转屏幕、字号缩放、播放页封面开合 */
+  if (window.ResizeObserver) {
+    var lastW = 0, lastH = 0, timer = 0;
+    var raf2 = window.requestAnimationFrame || function (f) { return setTimeout(f, 16); };
+    var ro = new ResizeObserver(function (entries) {
+      var r = entries[0].contentRect;
+      if (Math.abs(r.width - lastW) < 1 && Math.abs(r.height - lastH) < 1) return;
+      lastW = r.width; lastH = r.height;
+      clearTimeout(timer);
+      timer = setTimeout(reapply, 90);
+    });
+    ro.observe(document.documentElement);
+    api.__ro = ro;
+  }
+
+  window.SQApply = api;
+  if (window.CN) CN.sq = api;
+
+  /* 皮肤切换会改描边颜色，必须重算，否则描边还留在旧颜色上 */
+  document.addEventListener('skinchange', function () {
+    setTimeout(reapply, 30);
+  });
+  window.addEventListener('resize', function () {
+    clearTimeout(api.__rt);
+    api.__rt = setTimeout(reapply, 160);
+  });
+})();
+
+/* ===== 70-regions.js ===== */
+/* ==========================================================================
+   70-regions.js — 区域标注（A 区 / B 区 / C 区 …）
+   --------------------------------------------------------------------------
+   【为什么需要】
+   反馈问题时用「哪个小窗口」指代太模糊 ——
+   「快捷栏左边那个」「播放框下面一点」经常对不上号。
+   打开标注后，每个主要区域左上角会出现一个字母牌，
+   截图里直接写「B 区有个问题」，定位零歧义。
+
+   【怎么用】
+   · 开关在测试面板 → 「显示 A/B 区标注」
+   · 切视图 / 弹层打开时会自动重新标注
+   · 标注牌是半透明红底白字，不吃点击，不影响任何操作
+   ========================================================================== */
+
+(function () {
+  'use strict';
+
+  var CN = window.CN;
+
+  /* 区域定义：选择器 → 区域名
+     顺序即标注顺序（每个视图内从 A 开始）
+     选择器全部对照 index.html 核实过，别名不存在的会静默跳过
+
+     浮层类（弹层/提示条）单列在FLOATS —— 它们是 fixed 定位，
+     即使没打开也可能量到尺寸，必须靠「实际可见」过滤，
+     所以统一放最后，需要时单独用 checkVisible 严格判。 */
+  var MAP = [
+    /* 首页 */
+    ['.topbar',        '顶栏'],
+    ['#homeNow',       '正在播放卡'],
+    ['#homeGrid',      '入口网格'],
+    ['#plGrid',        '歌单墙'],
+    ['#mini',          '播放小框'],
+    ['#tabbar',        '快捷栏'],
+    /* 搜索 */
+    ['.searchbox',     '搜索框'],
+    ['#searchBanner',  '搜索横幅'],
+    ['#histSec',       '历史区'],
+    ['#searchBody',    '搜索结果区'],
+    /* 导入 */
+    ['#importBanner',  '导入横幅'],
+    ['#impInput',      '输入框'],
+    /* 我的 */
+    ['#secSet',        '外观分区'],
+    ['#setRows',       '外观设置'],
+    ['#playRows',      '播放设置'],
+    ['#aboutRows',     '关于'],
+    /* 列表 */
+    ['#listTitle',     '列表标题'],
+    ['#songList',      '歌曲列表'],
+    ['#songFoot',      '列表底栏'],
+    /* 播放页 */
+    ['.pp-head',       '播放页顶栏'],
+    ['.pp-disc',       '播放页封面'],
+    ['.pp-lyricbox',   '歌词区'],
+    ['.pp-info',       '歌曲信息'],
+    ['.pp-prog',       '进度条'],
+    ['.pp-ctl',        '控制区'],
+    ['.pp-acts',       '动作行'],
+    /* 浮层 */
+    ['.sheet',         '弹层'],
+    ['.toast',         '提示条']
+  ];
+
+  /* 判定「真实打开」的浮层：容器有 open 类或自身可见 */
+  var FLOATS = ['.sheet', '.toast'];
+
+  function isFloatOpen(sel, el) {
+    if (sel === '.sheet') return el.classList.contains('open') ||
+                                   el.getAttribute('aria-hidden') !== 'true';
+    if (sel === '.toast') return el.classList.contains('show') ||
+                                   el.textContent.trim() !== '';
+    return true;
+  }
+
+  var LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  var layer = null;
+
+  function ensureLayer() {
+    if (layer && layer.parentNode) return layer;
+    layer = document.createElement('div');
+    layer.id = '__region_layer__';
+    layer.setAttribute('aria-hidden', 'true');
+    layer.style.cssText =
+      'position:fixed;left:0;top:0;width:0;height:0;overflow:visible;' +
+      'pointer-events:none;z-index:2147483646';
+    document.body.appendChild(layer);
+    return layer;
+  }
+
+  function clear() {
+    if (!layer) return;
+    while (layer.firstChild) layer.removeChild(layer.firstChild);
+  }
+
+  function paint() {
+    /* 开关状态挂在 CN.regionOn 上，不在 CN.S 里 —— 判断错了会导致永远不画 */
+    if (!CN || !CN.regionOn) { clear(); return; }
+    var l = ensureLayer();
+    clear();
+
+    var i = 0;
+    for (var k = 0; k < MAP.length; k++) {
+      var sel = MAP[k][0];
+      var name = MAP[k][1];
+      var el;
+      try { el = document.querySelector(sel); } catch (e) { continue; }
+      if (!el) continue;
+      if (FLOATS.indexOf(sel) >= 0 && !isFloatOpen(sel, el)) continue;
+
+      var r = el.getBoundingClientRect();
+      if (r.width < 8 || r.height < 8) continue;          /* 隐藏 / 未渲染 */
+
+      /* 【必须查 visibility】
+         5 个视图都常驻 DOM，切走时只加 visibility:hidden（不设 display:none），
+         只判断 display 会把「当前视图之外的区块」也标出来，
+         结果一堆字母牌堆在屏幕底部。 */
+      var cs = getComputedStyle(el);
+      if (cs.visibility === 'hidden' || cs.opacity === '0') continue;
+
+      /* 祖先里有 visibility:hidden 的话，子元素 computed 也会是 hidden，
+         上一步已经拦住；这里再挡一道「不在当前视图内」的：
+         元素中心点必须在视口内 */
+      var cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+      if (cy < 0 || cy > window.innerHeight) continue;
+      if (cx < 0 || cx > window.innerWidth) continue;
+
+      var box = document.createElement('div');
+      box.style.cssText =
+        'position:absolute;left:' + Math.round(r.left) + 'px;top:' + Math.round(r.top) + 'px;' +
+        'display:flex;align-items:center;gap:4px;' +
+        'background:rgba(224,32,42,.92);color:#fff;border:1.5px solid #fff;' +
+        'border-radius:4px;padding:2px 7px;font:700 11px/1.3 -apple-system,sans-serif;' +
+        'white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.35)';
+      box.textContent = LETTERS[i % 26] + ' 区 · ' + name;
+
+      /* 从左上角稍微内缩，避免压住描边 */
+      l.appendChild(box);
+      i++;
+    }
+  }
+
+  /* ------------------------------------------------------------------
+     挂在 CN 上：CN.regionOn = true 打开，false 关闭
+     CN.setRegion(true) 返回 true（已开启），调用方可用返回值刷按钮文字
+     ------------------------------------------------------------------ */
+  if (CN) {
+    CN.regionOn = false;
+    CN.setRegion = function (on) {
+      CN.regionOn = !!on;
+      setTimeout(paint, 30);
+      return CN.regionOn;
+    };
+    CN.repaintRegion = paint;
+  }
+
+  /* 视图切换、弹层开合、列表渲染后自动重绘 */
+  var raf = 0;
+  function schedule() {
+    if (!CN || !CN.regionOn) return;
+    if (raf) return;
+    raf = (window.requestAnimationFrame || function (f) { return setTimeout(f, 30); })(function () {
+      raf = 0;
+      paint();
+    });
+  }
+
+  if (window.MutationObserver) {
+    var mo = new MutationObserver(schedule);
+    mo.observe(document.documentElement, { childList: true, subtree: true });
+  }
+  window.addEventListener('scroll', schedule, true);
+  document.addEventListener('scroll', schedule, true);
+  window.addEventListener('resize', schedule);
+
+  /* 切换视图后延一点再画，等动画结束、元素尺寸稳定 */
+  var oldGo = CN && CN.go;
+  if (CN && oldGo) {
+    CN.go = function (view, back) {
+      var r = oldGo.apply(this, arguments);
+      schedule();
+      setTimeout(paint, 320);
+      return r;
+    };
+  }
+
+  /* 弹层 / 播放页开合 */
+  ['openSheet', 'closeSheet', 'openPlayer', 'closePlayer'].forEach(function (fn) {
+    if (!CN || typeof CN[fn] !== 'function') return;
+    var orig = CN[fn];
+    CN[fn] = function () {
+      var r = orig.apply(this, arguments);
+      schedule();
+      setTimeout(paint, 340);
+      return r;
+    };
+  });
+
+})();
+
+/* ===== 90-boot.js ===== */
+/* ==========================================================================
+   椰子音乐 4 · 90-boot.js
+   启动 / 事件绑定 / 自检
+   --------------------------------------------------------------------------
+   旧版 app.js:2136 有个 auditBindings() 自检（查出 6 处死绑定）。
+   本版保留这个机制，并把它放在启动末尾跑。
+   ========================================================================== */
+
+(function () {
+  'use strict';
+
+  /* ==========================================================================
+     一、事件绑定
+     ========================================================================== */
+
+  /* ---------- Tab 栏 ---------- */
+  CN.delegate('tabbar', '.tab', 'click', function (e, t) {
+    var v = t.dataset.view;
+    if (v === 'fav')      CN.openList({ kind: 'fav', title: '我喜欢的音乐' });
+    else if (v === 'search')   { CN.go('search'); CN.renderHistChips(); }
+    else CN.go(v);
+  });
+
+  /* ---------- 顶栏 ---------- */
+  CN.on('themeBtn', 'click', function () {
+    /* 深浅色快切：在浅色系和深色系之间跳 */
+    var cur = CN.settings.skin;
+    var light = ['paper', 'pen'].indexOf(cur) >= 0;
+    CN.settings.skin = light ? 'dark' : 'paper';
+    CN.api.setSetting('skin', CN.settings.skin);
+    CN.applySettings();
+    CN.toast(CN.settings.skin === 'dark' ? '深色纸' : '米白纸');
+  });
+  CN.on('setBtn', 'click', function () { CN.go('settings'); });
+
+  /* ---------- 全局搜索 ---------- */
+  CN.on('searchInput', 'input', CN.debounce(function (e) {
+    var kw = (e.target.value || '').trim();
+    if (!kw) return;
+    if (CN.S.view !== 'search') CN.go('search');
+    CN.runSearch(kw, CN.S.view === 'search' && CN.S.kw === kw);
+  }, 450));
+  CN.on('searchInput', 'keydown', function (e) {
+    if (e.key !== 'Enter') return;
+    var kw = (e.target.value || '').trim();
+    if (kw) { e.target.blur(); CN.runSearch(kw, false); }
+  });
+
+  /* ---------- 首页 ---------- */
+  CN.delegate('homeGrid', '[data-go]', 'click', function (e, t) {
+    CN.openSection(t.dataset.go);
+  });
+  CN.delegate('plGrid', '[data-pl]', 'click', function (e, t) {
+    CN.openPlaylist(t.dataset.pl);
+  });
+  CN.on('addPlBtn', 'click', function () { CN.newPlaylistSheet(null); });
+  CN.on('homeNowPlay', 'click', function (e) {
+    e.stopPropagation();
+    CN.toggle();
+  });
+  CN.on('homeNow', 'click', function () { CN.openPlayer(); });
+
+  /* ---------- 搜索页 ---------- */
+  CN.delegate('histChips', '[data-kw]', 'click', function (e, t) {
+    CN.$('searchInput').value = t.dataset.kw;
+    CN.runSearch(t.dataset.kw, false);
+  });
+  CN.on('histClear', 'click', function () { CN.clearHist(); CN.toast('已清空'); });
+
+  /* ---------- 列表页 ---------- */
+  CN.delegate('songList', '.srow', 'click', function (e, t) {
+    if (e.target.closest('[data-more]')) return;
+    var i = Number(t.dataset.i);
+    CN.setQueue(CN.S.songs, i);
+  });
+  CN.delegate('songList', '[data-more]', 'click', function (e, t) {
+    e.stopPropagation();
+    var i = Number(t.dataset.more);
+    CN.openSongSheet(CN.S.songs[i], i);
+  });
+  CN.longPress(CN.$('songList'), function () {
+    if (CN.S.listKind === 'playlist' && CN.S.listId) CN.openPlaylistOps(CN.S.listId);
+  });
+  CN.on('listPlayAll', 'click', function () {
+    if (CN.S.songs.length) CN.setQueue(CN.S.songs, 0);
+    else CN.toast('列表是空的');
+  });
+  CN.on('listMore', 'click', function () {
+    if (CN.S.listKind === 'playlist' && CN.S.listId) CN.openPlaylistOps(CN.S.listId);
+    else CN.toast('这个列表不能操作');
+  });
+
+  /* ---------- 导入页 ---------- */
+  CN.on('impBtn', 'click', CN.doImport);
+  CN.on('impInput', 'keydown', function (e) {
+    if (e.key === 'Enter') { e.target.blur(); CN.doImport(); }
+  });
+  CN.on('pickTxtBtn', 'click', function () { CN.api.pickTxtFile(); });
+
+  /* ---------- 我的页 ---------- */
+  CN.on('loginBtn', 'click', function (e) {
+    e.stopPropagation();
+    if (CN.S.login.logged_in) {
+      CN.api.logout();
+      setTimeout(function () { CN.refreshLogin(); CN.renderHome(); CN.toast('已退出'); }, 400);
+    } else {
+      CN.api.openLogin();
+    }
+  });
+
+  /* ---------- MiniPlayer ---------- */
+  CN.on('mini', 'click', function () { CN.openPlayer(); });
+  CN.on('miniPlay', 'click', function (e) { e.stopPropagation(); CN.toggle(); });
+  CN.on('miniFav', 'click', function (e) { e.stopPropagation(); CN.favTap(); });
+  CN.on('mini', 'keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); CN.openPlayer(); }
+  });
+
+  /* ---------- 播放页 ---------- */
+  CN.on('ppDown', 'click', CN.closePlayer);
+  CN.on('ppPlay', 'click', CN.toggle);
+  CN.on('ppPrev', 'click', CN.prev);
+  CN.on('ppNext', 'click', CN.next);
+  CN.on('ppMode', 'click', CN.nextMode);
+  CN.on('ppFav', 'click', CN.favTap);
+  CN.on('ppDownload', 'click', function () {
+    if (!CN.S.track) { CN.toast('还没有在播放的歌曲'); return; }
+    CN.api.download(CN.S.track);
+    CN.toast('已加入下载队列');
+  });
+  CN.on('ppAdd', 'click', function () {
+    if (!CN.S.track) { CN.toast('还没有在播放的歌曲'); return; }
+    CN.openPickSheet(CN.S.track);
+  });
+  CN.on('ppLoud', 'click', function () {
+    CN.setLoud(!CN.S.loud);
+    CN.toast(CN.S.loud ? '响度均衡已开' : '响度均衡已关');
+  });
+  CN.on('ppSwap', 'click', function () {
+    if (!CN.S.track) { CN.toast('还没有在播放的歌曲'); return; }
+    CN.openSwapSheet(CN.S.track);
+  });
+  CN.on('ppQueue', 'click', CN.openQueueSheet);
+
+  /* 进度拖拽：限频刷新，松手才 tell 原生 */
+  var track = CN.$('ppTrack');
+  var dragging = false;
+  var ratioAt = function (e) {
+    var r = track.getBoundingClientRect();
+    var x = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
+    return CN.clamp(x / r.width, 0, 1);
+  };
+  track.addEventListener('touchstart', function (e) {
+    dragging = true; track.classList.add('dragging');
+    CN.seekByRatio(ratioAt(e)); e.preventDefault();
+  }, { passive: false });
+  track.addEventListener('touchmove', function (e) {
+    if (!dragging) return;
+    CN.seekByRatio(ratioAt(e)); e.preventDefault();
+  }, { passive: false });
+  track.addEventListener('touchend', function () {
+    dragging = false; track.classList.remove('dragging');
+  });
+  track.addEventListener('mousedown', function (e) {
+    dragging = true; track.classList.add('dragging');
+    CN.seekByRatio(ratioAt(e)); e.preventDefault();
+  });
+  window.addEventListener('mousemove', function (e) { if (dragging) CN.seekByRatio(ratioAt(e)); });
+  window.addEventListener('mouseup', function () {
+    if (!dragging) return;
+    dragging = false; track.classList.remove('dragging');
+  });
+  /* 键盘可达 */
+  track.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight') { CN.seek(CN.S.cur + 5); CN.paintProgress(); e.preventDefault(); }
+    if (e.key === 'ArrowLeft')  { CN.seek(CN.S.cur - 5); CN.paintProgress(); e.preventDefault(); }
+  });
+
+  /* ---------- Sheet ---------- */
+  CN.on('sheetClose', 'click', CN.closeSheet);
+
+  /* ---------- 设置页分区按钮：点标题展开/收起 ---------- */
+  Array.prototype.forEach.call(document.querySelectorAll('.sec-btn[data-sec]'), function (b) {
+    b.addEventListener('click', function () {
+      var key = b.dataset.sec;
+      var body = CN.$('sec' + key.charAt(0).toUpperCase() + key.slice(1));
+      if (!body) return;
+      var open = body.classList.toggle('open');
+      b.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  });
+
+  CN.on('scrim', 'click', function () {
+    if (CN.S.ppageOpen) CN.closePlayer();
+    else CN.closeSheet();
+  });
+
+  /* Sheet 下拉关闭 */
+  (function () {
+    var sh = CN.$('sheet');
+    var grab = CN.$('sheetGrab');
+    var sy = 0, dy = 0, drag = false;
+    grab.addEventListener('touchstart', function (e) {
+      sy = e.touches[0].clientY; dy = 0; drag = true;
+    }, { passive: true });
+    grab.addEventListener('touchmove', function (e) {
+      if (!drag) return;
+      dy = Math.max(0, e.touches[0].clientY - sy);
+      sh.style.transform = 'translateY(' + dy + 'px)';
+    }, { passive: true });
+    grab.addEventListener('touchend', function () {
+      if (!drag) return;
+      drag = false;
+      sh.style.transform = '';
+      if (dy > 80) CN.closeSheet();
+    });
+  })();
+
+  /* ==========================================================================
+     二、启动
+     ========================================================================== */
+  function boot() {
+    CN.loadSettings();
+
+    /* 恢复队列与收藏 */
+    try {
+      var favs = CN.api.getFavorites() || [];
+      favs.forEach(function (s) { if (s.bvid) CN.S.favs.add(s.bvid); });
+    } catch (e) {}
+
+    var q = CN.api.getQueue();
+    if (q && q.length) { CN.S.queue = q; CN.S.qIndex = q.length - 1; }
+
+    CN.renderHome();
+    CN.renderHistChips();
+    CN.syncTab();
+    CN.syncTop();
+    CN.paint();
+
+    /* 收藏状态回填 */
+    CN.paintFav();
+
+    /* 剪贴板检测（延迟，别挡启动）*/
+    setTimeout(function () {
+      if (CN.S.view === 'import') CN.checkClipboard();
+    }, 900);
+
+    /* 浏览器预览提示 */
+    if (!CN.N.has('playQueue')) {
+      console.info('[椰子音乐] 未检测到原生环境，进入浏览器预览模式：资料库可用，播放需在 App 内');
+    }
+
+    /* 漏绑自检 —— 旧版查过 6 处死绑定 */
+    auditBindings();
+  }
+
+  /* ==========================================================================
+     三、漏绑自检
+     有 id 但从没绑过事件的元素 → 报出来（多半是死 UI）
+     ========================================================================== */
+  function auditBindings() {
+    var ids = [
+      'themeBtn', 'setBtn', 'searchInput',
+      'addPlBtn', 'homeNowPlay', 'homeNow',
+      'histClear', 'listPlayAll', 'listMore', 'songList',
+      'impBtn', 'impInput', 'pickTxtFile'.replace('pickTxtFile', 'pickTxtBtn'),
+      'loginBtn', 'userCard',
+      'mini', 'miniPlay', 'miniFav',
+      'ppDown', 'ppPlay', 'ppPrev', 'ppNext', 'ppMode', 'ppFav',
+      'ppDownload', 'ppAdd', 'ppLoud', 'ppSwap', 'ppQueue', 'ppTrack',
+      'sheetClose', 'sheetGrab', 'scrim',
+    ];
+    var dead = [];
+    ids.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el) { dead.push(id + '(不存在)'); return; }
+      if (!el.__bound && !el.__dg) dead.push(id);
+    });
+    if (dead.length && window.console) {
+      console.warn('[自检] 这些 id 没有绑定事件：', dead.join(', '));
+    }
+  }
+
+  /* DOM 就绪后启动 */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+})();
+
+
+/* ===== squircle.js ===== */
+/* ==========================================================================
+   squircle.js — 连续圆角（超椭圆）路径生成
+   --------------------------------------------------------------------------
+   【要解决的问题】
+   普通 border-radius 是「直线段 + 圆弧段」在切点硬接，
+   曲率从 0 突变成 1/r，视觉上有一道接缝（用户说的「拼接感」）。
+   苹果的 Continuous Corners 用超椭圆过渡，曲率连续，所以没有接缝。
+
+   【几何】
+   矩形四边仍是直线，只在四个角把「圆弧」换成「超椭圆弧」。
+   曲率从 0 平滑升到峰值再平滑回 0，没有跳变。
+
+   【关键：路径必须一笔走完】
+   顺时针一圈：上边 → 右上角 → 右边 → 右下角 → 下边 →
+                左下角 → 左边 → 左上角 → 闭合。
+   每个角记作 [竖边切点 A, 横边切点 B]，
+   角弧把 A 弯到 B，然后一条直线接到下一个角的 A。
+   起点取「上边切点」，终点自然回到起点，`Z` 闭合不产生多余线段。
+   ========================================================================== */
+
+var SQ_N = 5;        /* 超椭圆指数：5 最接近苹果观感 */
+var SQ_STEPS = 8;    /* 每角采样数：8 足够平滑，再多只是浪费 path 长度 */
+
+/**
+ * 超椭圆角弧采样：从 A 弯到 B（不含 A，含 B）
+ * @param {number[]} A 起点（竖边上的切点）
+ * @param {number[]} B 终点（横边上的切点）
+ * @param {number} n 指数
+ * @param {number} steps 采样数
+ */
+function cornerArc(A, B, n, steps) {
+  var m = 2 / n;                       /* 超椭圆指数倒数 */
+  var pts = [];
+  for (var i = 1; i <= steps; i++) {
+    var t = (i / steps) * (Math.PI / 2);
+    var ct = Math.cos(t), st = Math.sin(t);
+    /* u: 1→0（沿 A→B 前进），v: 0→1（离开 A） */
+    var u = Math.pow(ct, m);
+    var v = Math.pow(st, m);
+    pts.push([
+      A[0] + (1 - u) * (B[0] - A[0]),
+      A[1] + v * (B[1] - A[1])
+    ]);
+  }
+  return pts;
+}
+
+/**
+ * 生成连续圆角矩形 path
+ * @param {number} w 宽 @param {number} h 高 @param {number} r 圆角
+ * @param {number} [n] 指数（默认 5） @param {number} [steps] 每角采样（默认 8）
+ */
+function squirclePath(w, h, r, n, steps) {
+  n = n || SQ_N;
+  steps = steps || SQ_STEPS;
+  r = Math.max(0, Math.min(r, w / 2, h / 2));
+  if (r === 0) {
+    return 'M0 0 L' + f(w) + ' 0 L' + f(w) + ' ' + f(h) + ' L0 ' + f(h) + ' Z';
+  }
+
+  /* 顺时针四角。每角 = [竖边切点, 横边切点]
+     起点在「上边靠右」= 右上角的 A */
+  var corners = [
+    [[w - r, 0], [w, r]],          /* 右上：上边 → 右边 */
+    [[w, h - r], [w - r, h]],      /* 右下：右边 → 下边 */
+    [[r, h], [0, h - r]],          /* 左下：下边 → 左边 */
+    [[0, r], [r, 0]]               /* 左上：左边 → 上边（回到起点） */
+  ];
+
+  var d = 'M' + f(corners[0][0][0]) + ' ' + f(corners[0][0][1]);
+
+  for (var i = 0; i < 4; i++) {
+    var A = corners[i][0], B = corners[i][1];
+    var pts = cornerArc(A, B, n, steps);
+    for (var j = 0; j < pts.length; j++) {
+      d += ' L' + f(pts[j][0]) + ' ' + f(pts[j][1]);
+    }
+    /* 直线段：当前角终点（= B）→ 下一个角起点（= nextA） */
+    var nextA = corners[(i + 1) % 4][0];
+    d += ' L' + f(nextA[0]) + ' ' + f(nextA[1]);
+  }
+  return d + ' Z';
+}
+
+function f(v) { return (Math.round(v * 100) / 100).toString(); }
+
+/* 生成 CSS clip-path（形状裁剪，会连边框一起裁） */
+function squircleClip(w, h, r, n) {
+  return 'path("' + squirclePath(w, h, r, n) + '")';
+}
+
+/* 生成 SVG data URI，用作 mask —— 只裁背景不裁边框 */
+function squircleMaskURI(w, h, r, n) {
+  var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + w + ' ' + h +
+    '" preserveAspectRatio="none"><path d="' + squirclePath(w, h, r, n) + '" fill="#000"/></svg>';
+  return 'url("data:image/svg+xml,' + encodeURIComponent(svg).replace(/'/g, '%27') + '")';
+}
+
+/**
+ * 描边专用的 path：把边框画在路径上，而不是被裁掉。
+ * 做法 = 外圈路径 + 反向内圈路径，stroke 只落在两圈之间。
+ */
+function squircleRingPath(w, h, r, sw, n) {
+  var outer = squirclePath(w, h, r, n);
+  var iw = w - sw * 2, ih = h - sw * 2;
+  var ir = Math.max(0, r - sw);
+  if (iw <= 0 || ih <= 0) return outer;
+  var inner = squirclePath(iw, ih, ir, n).slice(1, -1);   /* 去掉 M 和 Z */
+  /* 内圈用 transform 移到内侧不可行（path 不支持 transform），
+     改成手写偏移：直接把每个坐标加 sw */
+  var nums = inner.match(/-?\d+(?:\.\d+)?/g);
+  var moved = '';
+  for (var i = 0; i < nums.length; i += 2) {
+    moved += 'L' + (parseFloat(nums[i]) + sw) + ' ' + (parseFloat(nums[i + 1]) + sw) + ' ';
+  }
+  return outer.slice(0, -1) + moved + ' Z';
+}
+
+var SQ = {
+  path: squirclePath,
+  clip: squircleClip,
+  mask: squircleMaskURI,
+  ring: squircleRingPath,
+  N: SQ_N
+};
+
+if (typeof module !== 'undefined' && module.exports) { module.exports = SQ; }
+if (typeof window !== 'undefined') { window.SQ = SQ; }
+</script>
+
+<script>
+/* ==========================================================================
+   调试面板 —— 只在测试版注入，方便你切到有问题的那一屏截图
+   ========================================================================== */
+(function () {
+  function h(tag, css, txt) {
+    var e = document.createElement(tag);
+    if (css) e.setAttribute('style', css);
+    if (txt != null) e.textContent = txt;
+    return e;
+  }
+  var collapsed = true;
+
+  /* 面板不能挡住底部 Tab 栏（之前固定在 bottom:0、z-index 99999，
+     把整个 Tab 栏压在下面，用户看到"只有一条小边边"）。
+     改成：默认收起成一条 30px 窄条，展开时向上长，不覆盖 dock。 */
+  var root = h('div', [
+    'position:fixed', 'left:0', 'right:0', 'bottom:0', 'z-index:99999',
+    'background:#111', 'color:#eee', 'font:12px/1.5 -apple-system,sans-serif',
+    'border-top:2px solid #31C27C', 'max-height:70vh', 'overflow:auto',
+  ].join(';'));
+
+  var bar = h('div', 'padding:6px 10px;display:flex;gap:6px;align-items:center;flex-wrap:wrap');
+  var body = h('div', 'padding:0 10px 10px;display:none');
+
+  var btn = function (label, fn) {
+    var b = h('button', [
+      'background:#222', 'color:#eee', 'border:1px solid #444',
+      'padding:5px 9px', 'border-radius:6px', 'font-size:11px', 'cursor:pointer',
+    ].join(';'), label);
+    b.addEventListener('click', fn);
+    return b;
+  };
+
+  var toggle = btn('▲ 测试面板', function () {
+    collapsed = !collapsed;
+    body.style.display = collapsed ? 'none' : 'block';
+    toggle.textContent = collapsed ? '▲ 测试面板' : '▼ 收起面板';
+    /* 给 App 底部留出面板高度，避免面板压住 Tab 栏 */
+    document.querySelector('.app').style.paddingBottom =
+      collapsed ? '30px' : (body.offsetHeight + 30) + 'px';
+  });
+  bar.appendChild(toggle);
+  bar.appendChild(h('span', 'color:#31C27C;font-weight:700',
+    '切到有问题的状态再截图'));
+
+  var section = function (title) {
+    body.appendChild(h('div', 'color:#31C27C;margin:8px 0 4px;font-weight:700', title));
+  };
+  var row = function () {
+    var r = h('div', 'display:flex;gap:5px;flex-wrap:wrap;margin-bottom:4px');
+    body.appendChild(r);
+    return r;
+  };
+
+  /* --- 皮肤 --- */
+  section('皮肤');
+  var r1 = row();
+  CN.SKINS.forEach(function (s) {
+    r1.appendChild(btn(s.n, function () {
+      CN.settings.skin = s.v; CN.applySettings();
+      CN.toast('已切到 ' + s.n);
+    }));
+  });
+
+  /* --- 主题色 --- */
+  section('主题色');
+  var r2 = row();
+  ['#FF6B4A','#F5426C','#FFC93D','#31C27C','#1BC5C8','#3B7DD8','#A66BFF','#FF6BC5'].forEach(function (c) {
+    var b = h('button', 'width:26px;height:26px;border-radius:50%;border:2px solid #555;cursor:pointer;background:' + c);
+    b.addEventListener('click', function () {
+      CN.settings.accent = c; CN.applySettings();
+      CN.toast('主题色 ' + c);
+    });
+    r2.appendChild(b);
+  });
+
+  /* --- 切页面 --- */
+  section('切页面');
+  var r3 = row();
+  [['首页','home'],['搜索','search'],['导入','import'],['我的','settings']].forEach(function (p) {
+    r3.appendChild(btn(p[0], function () { CN.go(p[1]); }));
+  });
+  r3.appendChild(btn('列表', function () { CN.openList({kind:'fav', title:'我喜欢的音乐'}); }));
+  r3.appendChild(btn('外部占位歌单', function () { CN.openList({kind:'playlist', id:'p1', title:'通勤路上'}); }));
+
+  /* --- 播放状态 --- */
+  section('播放状态（当前无歌）');
+  var r4 = row();
+  r4.appendChild(btn('开始播放第1首', function () {
+    CN.setQueue(CN.api.getFavorites() || [], 0);
+  }));
+  r4.appendChild(btn('播放/暂停', function () { CN.toggle(); }));
+  r4.appendChild(btn('下一首', function () { CN.next(); }));
+  r4.appendChild(btn('打开播放页', function () { CN.openPlayer(); }));
+  r4.appendChild(btn('清空歌曲', function () {
+    CN.S.queue = []; CN.S.qIndex = -1; CN.S.track = null; CN.S.state = 'idle'; CN.paint();
+  }));
+
+  /* --- 弹层 --- */
+  section('弹层');
+  var r5 = row();
+  r5.appendChild(btn('歌曲操作', function () {
+    CN.openSongSheet((CN.S.songs || CN.api.getFavorites() || [])[0] || null, 0);
+  }));
+  r5.appendChild(btn('歌曲详情', function () {
+    CN.openDetailSheet((CN.S.songs || CN.api.getFavorites() || [])[0] || null);
+  }));
+  r5.appendChild(btn('播放队列', CN.openQueueSheet));
+  r5.appendChild(btn('换音源', function () {
+    CN.openSwapSheet((CN.S.songs || CN.api.getFavorites() || [])[0] || null);
+  }));
+  r5.appendChild(btn('加入歌单', function () {
+    CN.openPickSheet((CN.S.songs || CN.api.getFavorites() || [])[0] || null);
+  }));
+  r5.appendChild(btn('新建歌单', function () { CN.newPlaylistSheet(null); }));
+  r5.appendChild(btn('外部导入', function () {
+    CN.$('impInput').value = 'https://music.example.com/n/music/playlist/1234567890';
+    CN.doImport();
+  }));
+
+  /* --- 字号 / 密度 --- */
+  section('字号与密度');
+  var r6 = row();
+  [['小','s'],['标准','m'],['大','l'],['特大','xl']].forEach(function (f) {
+    r6.appendChild(btn('字号'+f[0], function () {
+      CN.settings.fontsize = f[1]; CN.applySettings(); CN.toast('字号 ' + f[0]);
+    }));
+  });
+  var r7 = row();
+  [['紧凑','c'],['标准','n'],['宽松','r']].forEach(function (d) {
+    r7.appendChild(btn('密度'+d[0], function () {
+      CN.settings.density = d[1]; CN.applySettings(); CN.toast('密度 ' + d[0]);
+    }));
+  });
+
+  /* --- 区域标注（A/B 区）--- */
+  section('区域标注（截图反馈用）');
+  var rR = row();
+  var regionBtn = btn('开：A/B 区标注', function () {
+    var on = CN.setRegion(!CN.regionOn);
+    regionBtn.textContent = CN.regionOn ? '关：区域标注' : '开：A/B 区标注';
+    CN.toast(CN.regionOn ? '已开启，每个区域左上角有字母牌' : '已关闭');
+  });
+  rR.appendChild(regionBtn);
+  rR.appendChild(btn('重绘标注', function () {
+    if (CN.repaintRegion) CN.repaintRegion();
+    CN.toast('已重绘');
+  }));
+
+  /* --- 日志 --- */
+  section('最近调用了哪些原生接口');
+  var logBox = h('pre', 'margin:0;padding:6px;background:#1a1a1a;color:#8f8;border-radius:4px;' +
+    'font-size:10px;max-height:90px;overflow:auto;white-space:pre-wrap');
+  body.appendChild(logBox);
+  setInterval(function () {
+    logBox.textContent = (window.__MOCK && window.__MOCK.logs.length)
+      ? window.__MOCK.logs.slice(-12).reverse().join('\n')
+      : '(还没有)';
+  }, 500);
+
+  root.appendChild(bar);
+  root.appendChild(body);
+  document.body.appendChild(root);
+
+  /* App 底部预留面板高度（默认收起 = 30px 细条） */
+  document.querySelector('.app').style.paddingBottom = '30px';
+})();
+</script>
+</body>
+
+</html>
