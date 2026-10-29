@@ -42,6 +42,16 @@ Windows 10/11（单文件 exe，不需要装 Python 或运行库）和 Android�
 **会收集我的数据吗？**
 不会。没有账号体系、没有埋点、不回传播放记录；程序只监听 `127.0.0.1`。
 
+## In English
+
+Coconut Music is a free, open-source desktop music player for Windows and Android that searches and streams audio from Bilibili. No account is required for search, playback or downloads; signing in only raises the maximum audio quality (Hi-Res / Dolby).
+
+Downloads are delivered as 320 kbps CBR `.mp3`, a standard format any editor accepts (Premiere, CapCut, Audition, DaVinci, Logic). If the bundled ffmpeg is missing or fails, the original `.m4a` is kept and the UI says so.
+
+The Windows build is one ~39 MB `.exe` built with PyInstaller — no Python or runtime installation. Playlists, history and settings stay in a local `data\library.json`; there is no account system, no telemetry and no self-hosted server.
+
+It is a personal learning project, MIT licensed; it stores and redistributes no audio — streams come from third-party public endpoints at playback time.
+
 ## 技术要点
 
 - Windows 端用 PyInstaller 打成单文件，自带 `ffmpeg.xz`，首次转码时才解压，不拖慢启动。
