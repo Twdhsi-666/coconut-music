@@ -10,14 +10,12 @@ Edge 的。这里给它一个自己的 AUMID（启动参数 --app-user-model-id�
 DisplayName / IconUri，任务栏就会显示椰子图标，也和 Edge 本身的窗口分开分组。
 """
 import ctypes
-import json
 import os
 import socket
 import subprocess
 import sys
 import threading
 import time
-import urllib.request
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, BASE_DIR)
@@ -57,12 +55,27 @@ def free_port():
         s.close()
 
 
-def already_running(port):
-    try:
-        with urllib.request.urlopen(f"http://127.0.0.1:{port}/api/state", timeout=1.5) as r:
-            return bool(json.loads(r.read().decode("utf-8")).get("ok"))
-    except Exception:
+_instance_mutex = None
+
+
+def acquire_single_instance():
+    """抢一个命名互斥量判重。
+
+    不用「去请求自己的端口」来判：这台机器上连本地没开的端口不会立刻拒绝，
+    而是要等满超时，冷启动会白等 1.5 秒。互斥量是内核对象，微秒级。
+    """
+    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    kernel32.CreateMutexW.argtypes = [ctypes.c_void_p, ctypes.c_bool, ctypes.c_wchar_p]
+    kernel32.CreateMutexW.restype = ctypes.c_void_p
+    h = kernel32.CreateMutexW(None, False, "Local\\CoconutMusic.SingleInstance")
+    if not h:
+        return True          # 拿不到互斥量时不阻止启动
+    if ctypes.get_last_error() == 183:   # ERROR_ALREADY_EXISTS
+        kernel32.CloseHandle(ctypes.c_void_p(h))
         return False
+    global _instance_mutex
+    _instance_mutex = h      # 进程活着期间必须持有
+    return True
 
 
 def find_edge():
@@ -211,16 +224,23 @@ def warmup():
 
 
 def main():
-    port = FIXED_PORT
-
-    if already_running(port):
+    if not acquire_single_instance():
         log("检测到椰子音乐已经在运行")
-        if activate_window():
-            log("已把已有窗口切到前台，本次退出")
+        for _ in range(50):
+            if activate_window():
+                log("已把已有窗口切到前台，本次退出")
+                return
+            time.sleep(0.1)
+            # 老实例可能刚关窗口、正在退（最多留 3 秒观察期）：互斥量一松就接手启动，
+            # 否则「关掉马上再双击」会变成什么都没发生。
+            if acquire_single_instance():
+                log("上一个实例正在退出，本次接手启动")
+                break
         else:
             log("没找到已有窗口，本次不再重复启动")
-        return
+            return
 
+    port = FIXED_PORT
     from server import run_server
     try:
         srv = run_server(port, "127.0.0.1")
@@ -229,11 +249,6 @@ def main():
         srv = run_server(port, "127.0.0.1")
     threading.Thread(target=srv.serve_forever, daemon=True).start()
     log(f"服务已启动：http://127.0.0.1:{port}/")
-
-    for _ in range(40):
-        if already_running(port):
-            break
-        time.sleep(0.1)
 
     url = f"http://127.0.0.1:{port}/"
     threading.Thread(target=warmup, daemon=True).start()
@@ -262,7 +277,19 @@ def main():
         set_window_icon()
 
     try:
-        proc.wait()          # 窗口关闭后 Edge 主进程退出
+        # 不能拿 Edge 进程当「窗口还开着」的信号：Edge 对同一个 user-data-dir 是单实例，
+        # 已有 Edge 在跑时新起的 msedge 会把窗口交给老进程、自己立刻退出。
+        # 那样 proc.wait() 瞬间返回，主程序先退，窗口变成没有后端的空壳 —— 点歌单就是「歌单不存在」。
+        # 改成盯窗口本身：连续 3 秒看不见椰子窗口才退出。
+        missing = 0
+        while True:
+            time.sleep(1)
+            if _enum_windows(WINDOW_TITLE):
+                missing = 0
+            else:
+                missing += 1
+                if missing >= 3:
+                    break
     except KeyboardInterrupt:
         pass
     log("窗口已关闭，程序退出")
