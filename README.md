@@ -1,8 +1,25 @@
-# 椰子音乐 Coconut Music
+<div align="center">
 
-本地优先的音乐播放器：歌单和设置在你自己电脑上，音频流从公开接口实时取，没有自建后端、没有账号系统、没有遥测。
+# 椰子音乐 · Coconut Music
+
+**本地优先的开源桌面音乐播放器**：歌单和设置留在你自己电脑上，音频流从公开接口实时取。
+
+[![Release](https://img.shields.io/github/v/release/Twdhsi-666/coconut-music?label=release&color=2ea44f)](https://github.com/Twdhsi-666/coconut-music/releases/latest)
+[![License](https://img.shields.io/github/license/Twdhsi-666/coconut-music)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Android-4a90d9)](https://github.com/Twdhsi-666/coconut-music/releases/latest)
+[![Stars](https://img.shields.io/github/stars/Twdhsi-666/coconut-music?style=flat)](https://github.com/Twdhsi-666/coconut-music/stargazers)
+
+[![椰子音乐主界面：左侧是发现音乐、搜索结果和导入的歌单，中间是最近播放列表，底部是播放器](docs/screenshot-main.png)](docs/screenshot-main.png)
+
+</div>
+
+它适合这种人：不想为听歌装一整客户端，不想把歌单交给别人的云端，也不想自己搭服务器。Windows 端是一个约 39 MB 的单文件 `exe`，双击到窗口出现约 0.9 秒；Android 端是一个 WebView 单文件应用。
+
+**English** — Coconut Music is a local-first, open-source music player for Windows and Android. Playlists, favorites and settings live in a local JSON file with atomic writes and automatic `.bak` backups; audio streams come straight from public endpoints through a loopback proxy. The Windows build is a single ~39 MB `.exe` (PyInstaller, no Python or runtime needed) that opens in about 0.9 s. No account system, no self-hosted server, no telemetry.
 
 > 个人学习项目。使用前请先读 [DISCLAIMER.md](DISCLAIMER.md)。
+
+[下载](#下载) · [它能做什么](#它能做什么) · [项目结构](#项目结构) · [从源码运行](#从源码运行) · [常见问题](#常见问题) · [参与和反馈](#参与和反馈)
 
 ---
 
@@ -18,7 +35,7 @@ Windows 单文件，双击即用，不需要装 Python。首次运行会在同�
 
 ---
 
-## 是什么
+## 它能做什么
 
 - **本地优先**：歌单、收藏、播放历史、设置存在本机 JSON 里（原子写入 + 自动 `.bak` 备份），不上传。
 - **秒开**：双击到窗口出现约 0.9 秒（冷启动实测），单文件 exe，不需要装运行库。
@@ -26,10 +43,13 @@ Windows 单文件，双击即用，不需要装 Python。首次运行会在同�
 - **导入歌单**：贴一张歌单分享链接，只把元数据搬过来；每首歌在第一次播放时才去匹配音源（懒匹配），不批量轰炸接口。
 - **下载转 MP3**：音源是 AAC/MP4，下完自动转 320K CBR MP3，转不了就保留原文件并提示，不会假装成功。
 - **可选登录**：扫码授权只为了拿更高音质，凭据只存本机，随时可清。
+- **无遥测**：不埋点、不回传播放记录；联网只发生在搜索、取音频流和下载的时候。
+
+界面是原生 HTML/CSS/JS，没有前端框架；后端除 `requests` 外只用 Python 标准库。音频流走本机回环代理，只监听 `127.0.0.1`，局域网里的其他设备访问不到。
 
 ---
 
-## 目录
+## 项目结构
 
 ```
 pc/                         PC 端（Python，除 requests 外都是标准库）
@@ -46,12 +66,13 @@ pc/                         PC 端（Python，除 requests 外都是标准库）
 ├── MAINTAIN.md             ★ 维护指南：为什么代码长这样、踩过哪些坑
 └── 椰子音乐.spec            PyInstaller 打包配置
 
+docs/                       截图等展示素材
 mobile/                     手机端单文件 WebView 应用 + 安装包
 ```
 
 ---
 
-## 从源码跑
+## 从源码运行
 
 要求 Python 3.11+（开发环境 3.13），只需要 `requests`：
 
@@ -97,11 +118,21 @@ B 站会间歇性拦脚本请求，跟你的账号和网络没关系。程序里
 
 ---
 
-## 要接着改这份代码
+## 参与和反馈
 
-先读 [`pc/MAINTAIN.md`](pc/MAINTAIN.md)。里面写了每个网络请求为什么那样写、风控的三种表现和应对、
+用的时候遇到问题，直接在 [Issues](https://github.com/Twdhsi-666/coconut-music/issues) 里说，最好带上：
+
+- 系统版本、是 exe 还是源码运行
+- 复现步骤（点了什么、在哪一步断的）
+- 界面上报的原文，或者控制台里的最后几行
+
+想改代码的话先读 [`pc/MAINTAIN.md`](pc/MAINTAIN.md)。里面写了每个网络请求为什么那样写、风控的三种表现和应对、
 Windows 上那几个绕不开的坑（WebView2 崩溃、任务栏图标、单实例），以及打包发布流程。
 所有数字都是实测的，不是估计。
+
+## 更新记录
+
+每个版本改了什么、慢在哪、怎么验证的，都写在 [Releases](https://github.com/Twdhsi-666/coconut-music/releases) 里。
 
 ## 合规
 
