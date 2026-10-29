@@ -12,70 +12,70 @@ from ctypes import wintypes
 
 user32 = ctypes.windll.user32
 
-MOD_ALT = 1
-MOD_CONTROL = 2
-MOD_SHIFT = 4
-MOD_WIN = 8
-MOD_NOREPEAT = 16384
-WM_HOTKEY = 786
-PM_REMOVE = 1
+MOD_ALT = 0x0001
+MOD_CONTROL = 0x0002
+MOD_SHIFT = 0x0004
+MOD_WIN = 0x0008
+MOD_NOREPEAT = 0x4000
+WM_HOTKEY = 0x0312
+PM_REMOVE = 0x0001
 
 MODIFIERS = {
-    'ctrl': MOD_CONTROL,
-    'control': MOD_CONTROL,
-    'alt': MOD_ALT,
-    'shift': MOD_SHIFT,
-    'win': MOD_WIN,
-    'super': MOD_WIN,
+    "ctrl": MOD_CONTROL,
+    "control": MOD_CONTROL,
+    "alt": MOD_ALT,
+    "shift": MOD_SHIFT,
+    "win": MOD_WIN,
+    "super": MOD_WIN,
 }
 
 VK_MAP = {
-    'left': 37, 'up': 38, 'right': 39, 'down': 40,
-    'space': 32, 'enter': 13, 'return': 13, 'esc': 27, 'escape': 27,
-    'tab': 9, 'backspace': 8, 'delete': 46, 'insert': 45,
-    'home': 36, 'end': 35, 'pageup': 33, 'pagedown': 34,
-    '`': 192, '-': 189, '=': 187, '[': 219, ']': 221, '\\': 220,
-    ';': 186, "'": 222, ',': 188, '.': 190, '/': 191,
-    'media_next': 176, 'media_prev': 177, 'media_stop': 178,
-    'media_play_pause': 179, 'volume_mute': 173,
-    'volume_down': 174, 'volume_up': 175,
+    "left": 0x25, "up": 0x26, "right": 0x27, "down": 0x28,
+    "space": 0x20, "enter": 0x0D, "return": 0x0D, "esc": 0x1B, "escape": 0x1B,
+    "tab": 0x09, "backspace": 0x08, "delete": 0x2E, "insert": 0x2D,
+    "home": 0x24, "end": 0x23, "pageup": 0x21, "pagedown": 0x22,
+    "`": 0xC0, "-": 0xBD, "=": 0xBB, "[": 0xDB, "]": 0xDD, "\\": 0xDC,
+    ";": 0xBA, "'": 0xDE, ",": 0xBC, ".": 0xBE, "/": 0xBF,
+    "media_next": 0xB0, "media_prev": 0xB1, "media_stop": 0xB2,
+    "media_play_pause": 0xB3, "volume_mute": 0xAD,
+    "volume_down": 0xAE, "volume_up": 0xAF,
 }
-for _c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+for _c in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
     VK_MAP[_c.lower()] = ord(_c)
-for _d in '0123456789':
+for _d in "0123456789":
     VK_MAP[_d] = ord(_d)
 for _i in range(1, 13):
-    VK_MAP[f'f{_i}'] = 111 + _i
+    VK_MAP[f"f{_i}"] = 0x6F + _i
 
 
 def parse_combo(combo):
     """'Ctrl+Alt+Left' -> (修饰键掩码, 虚拟键码)；解析失败返回 (0, 0)"""
     if not combo:
-        return (0, 0)
-    parts = [p.strip() for p in str(combo).replace('＋', '+').split('+') if p.strip()]
+        return 0, 0
+    parts = [p.strip() for p in str(combo).replace("＋", "+").split("+") if p.strip()]
     if not parts:
-        return (0, 0)
+        return 0, 0
     mods = 0
     vk = 0
     for p in parts:
-        low = p.lower().replace('control', 'ctrl').replace(' ', '')
+        low = p.lower().replace("control", "ctrl").replace(" ", "")
         if low in MODIFIERS:
             mods |= MODIFIERS[low]
         elif low in VK_MAP:
             vk = VK_MAP[low]
         elif len(p) == 1:
-            vk = user32.VkKeyScanW(ord(p)) & 255
+            vk = user32.VkKeyScanW(ord(p)) & 0xFF
     if not vk:
-        return (0, 0)
+        return 0, 0
     return mods, vk
 
 
 def describe(combo):
     """给界面看的友好写法"""
-    parts = [p.strip() for p in str(combo or '').split('+') if p.strip()]
-    names = {'ctrl': 'Ctrl', 'control': 'Ctrl', 'alt': 'Alt', 'shift': 'Shift', 'win': 'Win'}
+    parts = [p.strip() for p in str(combo or "").split("+") if p.strip()]
+    names = {"ctrl": "Ctrl", "control": "Ctrl", "alt": "Alt", "shift": "Shift", "win": "Win"}
     out = [names.get(p.lower(), p) for p in parts]
-    return ' + '.join(out) if out else '未设置'
+    return " + ".join(out) if out else "未设置"
 
 
 class HotkeyManager:
@@ -86,11 +86,11 @@ class HotkeyManager:
         self.lock = threading.Lock()
         self.thread = None
         self._stop = threading.Event()
-        self.active = {}
-        self.failed = []
-        self.fallback = []
+        self.active = {}        # action -> 实际生效的组合键
+        self.failed = []        # [(action, combo)] 彻底注册不上
+        self.fallback = []      # [(action, 原组合, 实际用的组合)] 原键被占，自动换了备用
 
-
+    # ------------------------------------------------------------ 对外接口
     def apply(self, mapping, enabled=True):
         """(重新) 注册一批热键。mapping 形如 {"prev": "Ctrl+Alt+Left", ...}"""
         self.stop()
@@ -102,7 +102,7 @@ class HotkeyManager:
         self._stop.clear()
         self.thread = threading.Thread(target=self._loop, args=(dict(mapping),), daemon=True)
         self.thread.start()
-        for _ in range(25):
+        for _ in range(25):          # 等注册结果（秒级）
             time.sleep(0.03)
             if self.active or self.failed:
                 break
@@ -128,21 +128,21 @@ class HotkeyManager:
 
     def status(self):
         return {
-            'active': {k: describe(v) for k, v in self.active.items()},
-            'raw': dict(self.active),
-            'failed': [{'action': a, 'combo': describe(c)} for a, c in self.failed],
-            'fallback': [{'action': a, 'want': describe(w), 'got': describe(g)}
-                          for a, w, g in self.fallback],
-            'enabled': bool(self.thread and self.thread.is_alive()),
+            "active": {k: describe(v) for k, v in self.active.items()},
+            "raw": dict(self.active),          # 原始写法，界面回填用
+            "failed": [{"action": a, "combo": describe(c)} for a, c in self.failed],
+            "fallback": [{"action": a, "want": describe(w), "got": describe(g)}
+                         for a, w, g in self.fallback],
+            "enabled": bool(self.thread and self.thread.is_alive()),
         }
 
-
+    # ------------------------------------------------------------ 消息循环
     def _loop(self, mapping):
         ids = {}
-        hid = 41216
+        hid = 0xA100
         for action, combo in mapping.items():
             placed = None
-
+            # 先试用户设的组合，被占了就试备用组合
             for cand in (combo, FALLBACK.get(action)):
                 if not cand:
                     continue
@@ -150,12 +150,12 @@ class HotkeyManager:
                 if not vk or not mods:
                     continue
                 hid += 1
-                if not user32.RegisterHotKey(None, hid, mods | MOD_NOREPEAT, vk): continue
-                ids[hid] = action
-                placed = cand
-                if cand != combo:
-                    self.fallback.append((action, combo, cand))
-                break
+                if user32.RegisterHotKey(None, hid, mods | MOD_NOREPEAT, vk):
+                    ids[hid] = action
+                    placed = cand
+                    if cand != combo:
+                        self.fallback.append((action, combo, cand))
+                    break
             if placed:
                 self.active[action] = placed
             else:
@@ -182,17 +182,17 @@ class HotkeyManager:
 MANAGER = HotkeyManager()
 
 DEFAULT_HOTKEYS = {
-    'prev': 'Ctrl+Alt+Left',
-    'next': 'Ctrl+Alt+Right',
-    'volUp': 'Ctrl+Alt+Up',
-    'volDown': 'Ctrl+Alt+Down',
+    "prev": "Ctrl+Alt+Left",
+    "next": "Ctrl+Alt+Right",
+    "volUp": "Ctrl+Alt+Up",
+    "volDown": "Ctrl+Alt+Down",
 }
 
-
-
+# 系统/驱动常常占用一些组合键 —— 最典型的就是 Ctrl+Alt+方向键（显卡驱动的「屏幕旋转」）。
+# 注册失败时自动退到这一组，免得用户开机就发现快捷键没反应。
 FALLBACK = {
-    'prev': 'Ctrl+Alt+Shift+Left',
-    'next': 'Ctrl+Alt+Shift+Right',
-    'volUp': 'Ctrl+Alt+Shift+Up',
-    'volDown': 'Ctrl+Alt+Shift+Down',
+    "prev": "Ctrl+Alt+Shift+Left",
+    "next": "Ctrl+Alt+Shift+Right",
+    "volUp": "Ctrl+Alt+Shift+Up",
+    "volDown": "Ctrl+Alt+Shift+Down",
 }

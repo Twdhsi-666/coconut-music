@@ -1,7 +1,14 @@
+# Python
 __pycache__/
 *.pyc
+
+# 打包产物（成品走 Release，不进仓库）
 build/
 dist/
-*.spec
-.venv/
+*.pyz
+
+# 本地数据（歌单、设置、登录凭据）
 data/
+
+# 转码用的 ffmpeg，22 MB，从 Release 下载后放 pc/ 下
+ffmpeg.xz

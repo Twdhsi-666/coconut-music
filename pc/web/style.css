@@ -1,4 +1,4 @@
-/* 椰子音乐 · 仿 某音乐平台风格，浅色 / 深色双主题 */
+/* 椰子音乐 · 仿 QQ 音乐风格，浅色 / 深色双主题 */
 
 :root { --pad-x: 18px; }
 
@@ -293,7 +293,7 @@ input, select { font-family: inherit; font-size: 13px; color: inherit; outline: 
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .song-row.playing .t1 { color: var(--primary); font-weight: 600; }
-/* 「还没匹配到 某弹幕网站音源」的角标（外部歌单「秒导」进来的歌）。
+/* 「还没匹配到 B 站音源」的角标（QQ 歌单「秒导」进来的歌）。
    用弱化的底色 + 小字号，759 首一排排看过去不至于吵，但一眼能看出
    为什么有的歌点播放要先等一下 —— 它得先去搜一个音源。 */
 .src-tag {

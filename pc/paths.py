@@ -9,29 +9,26 @@
   否则每次启动都会丢 → `data_dir()`
 """
 import os
-
 import sys
 
 
 def is_frozen():
     """是不是被打包成 exe 在跑"""
-    return getattr(sys, 'frozen', False)
+    return getattr(sys, "frozen", False)
 
 
 def app_dir():
     """程序所在目录：exe 旁边 / 源码目录。可写的东西都放这里"""
     if is_frozen():
         return os.path.dirname(os.path.abspath(sys.executable))
-    else:
-        return os.path.dirname(os.path.abspath(__file__))
+    return os.path.dirname(os.path.abspath(__file__))
 
 
 def res_dir():
     """只读资源目录（web/、图标）"""
     if is_frozen():
-        return getattr(sys, '_MEIPASS', app_dir())
-    else:
-        return os.path.dirname(os.path.abspath(__file__))
+        return getattr(sys, "_MEIPASS", app_dir())
+    return os.path.dirname(os.path.abspath(__file__))
 
 
 def res_path(*parts):
@@ -40,7 +37,7 @@ def res_path(*parts):
 
 def data_dir():
     """可写数据目录（自动创建）"""
-    d = os.path.join(app_dir(), 'data')
+    d = os.path.join(app_dir(), "data")
     os.makedirs(d, exist_ok=True)
     return d
 

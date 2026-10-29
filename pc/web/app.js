@@ -15,7 +15,7 @@ const S = {
   queue: [],
   qi: -1,
   current: null,
-  noSource: new Set(),   // 这次运行里「自动匹配音源失败过」的歌：再遇到秒跳过，别反复搜 某弹幕网站（重复搜索会撞风控）
+  noSource: new Set(),   // 这次运行里「自动匹配音源失败过」的歌：再遇到秒跳过，别反复搜 B 站（重复搜索会撞风控）
   autoSkips: 0,          // 本轮连续自动跳了几首，到 2 首就停下来让用户决定
   login: { logged_in: false, uname: '' },
   search: { kw: '', order: 'totalrank', page: 1, results: [] },
@@ -33,24 +33,24 @@ const esc = (t) => String(t == null ? '' : t)
 
 const img = (u) => (u ? '/api/img?url=' + encodeURIComponent(u) : PLACEHOLDER);
 
-/* ------------------------------------------------- 音源占位（外部歌单） */
+/* ------------------------------------------------- 音源占位（QQ 歌单） */
 /**
- * 这首歌是不是「还没匹配到 某弹幕网站音源」。
+ * 这首歌是不是「还没匹配到 B 站音源」。
  *
- * 某音乐平台歌单是「秒导」进来的 —— 只搬目录、不逐首搜 某弹幕网站（759 首要是逐首搜，
- * 用户得等好几分钟，而且会直接撞上 某弹幕网站风控）。所以入库时 bvid 存的是
- * `mp_<mid>` 占位符 + unmatched:true，真正的音源等第一次播放时再补。
- * 判据写两遍（unmatched 标记 / mp_ 前缀）是因为老数据可能只有其中一个。
+ * QQ 音乐歌单是「秒导」进来的 —— 只搬目录、不逐首搜 B 站（759 首要是逐首搜，
+ * 用户得等好几分钟，而且会直接撞上 B 站风控）。所以入库时 bvid 存的是
+ * `qq_<mid>` 占位符 + unmatched:true，真正的音源等第一次播放时再补。
+ * 判据写两遍（unmatched 标记 / qq_ 前缀）是因为老数据可能只有其中一个。
  */
 function isUnmatchedSource(s) {
-  return !!(s && (s.unmatched || String(s.bvid || '').indexOf('mp_') === 0));
+  return !!(s && (s.unmatched || String(s.bvid || '').indexOf('qq_') === 0));
 }
 
 /**
- * 把占位音源换成真实的 某弹幕网站音源；本来就正常的话原样返回。
+ * 把占位音源换成真实的 B 站音源；本来就正常的话原样返回。
  *
  * 后端匹配成功后会把**所有歌单 + 播放历史**里的这条一起换掉，所以同一首歌
- * 只会搜一次 —— 既快，也少触发 某弹幕网站风控（重复搜索会 csrf 校验失败）。
+ * 只会搜一次 —— 既快，也少触发 B 站风控（重复搜索会 csrf 校验失败）。
  * 匹配不到就抛错，让调用方决定怎么跟用户说（绝不硬塞一个可能不对的音源）。
  */
 async function ensureSongSource(song) {
@@ -140,10 +140,10 @@ async function init() {
     doSearch(autoQ);
   } else if (autoView) {
     // 深链：/?view=share&text=<urlencoded> 可以直达统一导入页并自动导入。
-    // 旧的 ?view=musicimport 仍兼容（现在它就是统一导入页）。
-    const view = autoView === 'musicimport' ? 'share' : autoView;
+    // 旧的 ?view=qqimport 仍兼容（现在它就是统一导入页）。
+    const view = autoView === 'qqimport' ? 'share' : autoView;
     showView(view);
-    const preset = params.get('text') || params.get('music');
+    const preset = params.get('text') || params.get('qq');
     if (view === 'share' && preset) {
       setTimeout(() => {
         const inp = $('#shareInput');
@@ -292,14 +292,14 @@ function showView(v) {
   S.locateList = null;            // 换页了，定位圆点的归属列表作废
   $$('.nav-item').forEach((el) => {
     const target = el.dataset.view;
-    // 旧深链 ?view=musicimport 归到统一导入页，侧栏也要跟着亮那一项
-    const norm = v === 'musicimport' ? 'share' : v;
+    // 旧深链 ?view=qqimport 归到统一导入页，侧栏也要跟着亮那一项
+    const norm = v === 'qqimport' ? 'share' : v;
     el.classList.toggle('active', norm === target);
   });
   renderPlaylists();
   if (v === 'discover') return renderDiscover();
   if (v === 'search') return renderSearchView();
-  if (v === 'share' || v === 'musicimport') return renderShareImportView();
+  if (v === 'share' || v === 'qqimport') return renderShareImportView();
   if (v === 'history') return renderHistoryView();
   if (v === 'download') return renderDownloadView();
   if (v.startsWith('playlist:')) return renderPlaylistView(v.slice(9));
@@ -475,9 +475,9 @@ function bindSongList(rootSel, list, opts) {
 /**
  * 「在浏览器打开 ↗」。
  *
- * 占位音源拼不出 某弹幕网站视频地址：song.bvid 是 `mp_000ITtbG2Dys9Y` 这种，
- * 硬拼就是 example.com/video/mp_000ITtbG2Dys9Y，某弹幕网站返回 404 —— 用户看到
- * 的是一片空白页，完全不知道发生了什么。所以这类歌改成打开 某弹幕网站搜索页，
+ * 占位音源拼不出 B 站视频地址：song.bvid 是 `qq_000ITtbG2Dys9Y` 这种，
+ * 硬拼就是 bilibili.com/video/qq_000ITtbG2Dys9Y，B 站返回 404 —— 用户看到
+ * 的是一片空白页，完全不知道发生了什么。所以这类歌改成打开 B 站搜索页，
  * 把歌名+歌手先搜出来让用户自己挑，至少不会白页。
  */
 function openInBrowser(song) {
@@ -485,9 +485,9 @@ function openInBrowser(song) {
     const kw = cleanSwapQuery(song.name || song.title, song.artist || song.author)
       || song.name || song.title || '';
     toast('这首还没有能播的版本，先按歌名搜一下');
-    return window.open('https://search.example.com/all?keyword=' + encodeURIComponent(kw));
+    return window.open('https://search.bilibili.com/all?keyword=' + encodeURIComponent(kw));
   }
-  return window.open('https://www.example.com/video/' + encodeURIComponent(song.bvid));
+  return window.open('https://www.bilibili.com/video/' + encodeURIComponent(song.bvid));
 }
 
 /* -------------------------------------------------------------- 发现页 */
@@ -569,7 +569,7 @@ async function renderPlaylistView(pid) {
   const total = (pl.songs || []).reduce((a, s) => a + (s.duration || 0), 0);
   box.innerHTML = contentHead(esc(pl.name),
     `${pl.songs.length} 首歌 · 总时长 ${fmtTime(total)}` +
-    (pl.source === 'musicplatform' ? ' · 导入的歌单' : ''),
+    (pl.source === 'qqmusic' ? ' · 导入的歌单' : ''),
     `<button class="pill-btn" id="playAllBtn">▶ 播放全部</button>
      <button class="pill-btn plain" id="renameBtn">重命名</button>
      <button class="pill-btn plain" id="exportBtn">导出列表</button>`) +
@@ -604,7 +604,7 @@ async function renderPlaylistView(pid) {
               duration: pick.duration,
               cover: pick.cover,
               play: pick.play,
-              source: song ? song.source : 'video',
+              source: song ? song.source : 'bili',
             };
             try {
               const r = await api('/api/playlist/replace',
@@ -732,8 +732,8 @@ async function saveShareFile(pid, openAfter) {
  *
  * 判据与手机版椰子音乐的 doImport()/checkClipboard() 完全一致（顺序也不能变）：
  *   1. COCONUTPL1:  → 椰子歌单分享（本地解码，最先认）
- *   2. example.com 系 或 纯数字 ID → 某音乐平台歌单
- *   3. 某弹幕网站/link.example.com/BV 号/av 号 → 某弹幕网站单曲
+ *   2. qq.com 系 或 纯数字 ID → QQ 音乐歌单
+ *   3. bilibili/b23.tv/BV 号/av 号 → B 站单曲
  * 认不出来就明确报错，不悄悄当成搜索词。
  *
  * 识别放在服务端（linkparse.detect），此处只负责"边打字边给出类型提示"。
@@ -787,10 +787,10 @@ function guessKind(t) {
   const s = String(t || '').trim();
   if (!s) return null;
   if (s.includes('COCONUTPL1:')) return { k: 'share', label: '椰子歌单分享', cls: 'ok' };
-  if (/music\.example\.com|musicplatform|musicu\.fcg/i.test(s) || /^\d{6,}$/.test(s))
-    return { k: 'music', label: '外部歌单', cls: 'ok' };
-  if (/example\.com|link\.example\.com|BV1[0-9A-Za-z]{9}|av\d{5,}/i.test(s) || /BV[0-9A-Za-z]{10}/.test(s))
-    return { k: 'video', label: '视频链接', cls: 'ok' };
+  if (/y\.qq\.com|qq\.com|qqmusic|qq\.music|musicu\.fcg/i.test(s) || /^\d{6,}$/.test(s))
+    return { k: 'qq', label: '外部歌单', cls: 'ok' };
+  if (/bilibili\.com|b23\.tv|BV1[0-9A-Za-z]{9}|av\d{5,}/i.test(s) || /BV[0-9A-Za-z]{10}/.test(s))
+    return { k: 'bili', label: '视频链接', cls: 'ok' };
   return { k: 'unknown', label: '认不出来（不是椰子分享 / 歌单链接 / 视频链接）', cls: 'bad' };
 }
 
@@ -824,7 +824,7 @@ async function pickShareFile() {
 /**
  * 导入主流程 —— 交给 /api/import/auto，由后端按同一套判据分流。
  *
- * 失败提示刻意按来源分开：认不出 / 是分享但坏了 / 是外部歌单但读不到 / 是 某弹幕网站但没 BV 号，
+ * 失败提示刻意按来源分开：认不出 / 是分享但坏了 / 是 QQ 但读不到 / 是 B 站但没 BV 号，
  * 各自给能指导下一步的话。笼统报"导入失败"用户没法自救。
  */
 async function doShareImport() {
@@ -901,20 +901,23 @@ async function downloadSong(song, btnEl) {
   const old = btnEl ? btnEl.textContent : null;
   if (btnEl) { btnEl.disabled = true; btnEl.textContent = '…'; }
   try {
-    // 占位音源直接拿去下载只会 404（bvid 是 mp_xxx），先补一个真实音源
+    // 占位音源直接拿去下载只会 404（bvid 是 qq_xxx），先补一个真实音源
     if (isUnmatchedSource(song)) {
       toast('正在给这首找能播的版本…');
       Object.assign(song, await ensureSongSource(song));
     }
     const filename = buildFileName(song);
-    toast('开始下载：' + filename);
+    toast('正在下载并转成 MP3：' + filename);
     const r = await api('/api/download/song', {
       bvid: song.bvid,
       cid: song.cid,
       dir: S.settings.downloadDir || '',
       filename,
     });
-    toast(`已保存 ${r.name}（${(r.size / 1048576).toFixed(1)} MB · ${r.quality || ''}）`, 'ok');
+    toast(r.converted
+      ? `已存为 MP3：${r.name}（${(r.size / 1048576).toFixed(1)} MB）`
+      : `已保存 ${r.name}（${(r.size / 1048576).toFixed(1)} MB · ${r.quality || ''}），但转 MP3 没成功，先留了原始格式`,
+      r.converted ? 'ok' : 'err');
   } catch (e) {
     toast('下载失败：' + e.message, 'err');
   } finally {
@@ -958,7 +961,8 @@ async function renderDownloadView() {
         </div>
         <div class="dl-tip">
           • 文件名按「<b>歌手 - 歌名</b>」自动命名，重名会加序号，不会覆盖已有文件<br>
-          • 格式为 <b>${esc(st.ext || '.m4a')}</b>（音源本身就是这个格式，等于原始音质，不二次转码）<br>
+          • 格式为 <b>${esc(st.ext || '.mp3')}</b>（音源是 192K AAC，下完自动转成 320K MP3，手机 / 车机 / 剪辑软件都能直接吃）<br>
+          • 转码一首约 2~5 秒，转完自动删掉中间的 .m4a<br>
           • 下载<b>不影响播放</b>，可以边听边下
         </div>
       </div>
@@ -1072,7 +1076,7 @@ function loadAndPlay(song, opts) {
   reapplyVolume();
   updateLoudBtn();
 
-  // 占位音源（外部歌单「秒导」进来的）先去补一个真实的 某弹幕网站音源再播。
+  // 占位音源（QQ 歌单「秒导」进来的）先去补一个真实的 B 站音源再播。
   // 换源重载（reloadSame）时音源已经是真的，不走这条路。
   if (isUnmatchedSource(song) && !o.reloadSame) {
     resolveSourceThenPlay(song, o);
@@ -1082,7 +1086,7 @@ function loadAndPlay(song, opts) {
 }
 
 /**
- * 占位音源第一次播放：先自动匹配 某弹幕网站音源，匹配到了才开始取流。
+ * 占位音源第一次播放：先自动匹配 B 站音源，匹配到了才开始取流。
  *
  * 匹配不到就交给 autoNext 跳下一首（连跳上限见那里）—— 停在原地不出声最让人
  * 摸不着头脑，用户会以为软件卡死了。跳走时会点名是哪首没匹配上，不算偷偷摸摸。
@@ -1118,7 +1122,7 @@ async function resolveSourceThenPlay(song, o) {
   S.current = merged;
   renderNowPlaying();
   renderQueue();
-  // 列表里那一行现在应该显示新音源（歌名/歌手仍是外部平台那边的，不变），
+  // 列表里那一行现在应该显示新音源（歌名/歌手仍是 QQ 那边的，不变），
   // 重画一次让 data-bvid、高亮、⇄ 都跟上，免得再点一次又去匹配。
   await redrawCurrentView();
   toast('找到能播的版本了', 'ok');
@@ -1274,7 +1278,7 @@ function next(auto) {
 /**
  * 一首歌播不出来时往后挪一位，而不是停在原地不动。
  *
- * 上限是连跳 2 首：连着几首都取不到音源，多半是断网、某弹幕网站挂了或没登录，
+ * 上限是连跳 2 首：连着几首都取不到音源，多半是断网、B 站挂了或没登录，
  * 继续跳只会几十次地刷搜索接口（容易撞风控），不如停下来让人看一眼。
  * 计数器在一首歌真正播起来时（playing）和用户手动切歌时归零。
  */
@@ -1317,10 +1321,10 @@ function setMode(mode) {
 /**
  * 把「歌名 + 歌手」整成干净的搜索关键词，供换源弹窗用。
  *
- * 必须和后端 video_api.build_search_query 保持一致的清理规则，否则会出现
+ * 必须和后端 bili.build_search_query 保持一致的清理规则，否则会出现
  * 「后端清理后能搜到、前端默认词却搜不到」的诡异现象。两个实测坑：
- *   1. 歌名里的撇号 / 引号（It's、Don't）会让 某弹幕网站搜不到 → 换成空格
- *   2. 某音乐平台带过来的歌手常是「高橋あず美、Lotus Juice、ATLUS...」多人串，
+ *   1. 歌名里的撇号 / 引号（It's、Don't）会让 B 站搜不到 → 换成空格
+ *   2. QQ 音乐带过来的歌手常是「高橋あず美、Lotus Juice、ATLUS...」多人串，
  *      全塞进去反而搜不准 → 只取第一位
  * 另外去掉 feat./ft. 之后的部分和各类括号。
  */
@@ -1421,14 +1425,14 @@ function openSwapDialog(song, onPick) {
 }
 
 /** 重画导入列表里某一行的匹配结果 */
-function paintImportRow(i, mp, match) {
+function paintImportRow(i, qq, match) {
   const row = $(`#impSongs .imp-song[data-i="${i}"]`);
   const mk = $('#mk' + i);
   const mt = $('#mt' + i);
   if (!match) {
     if (row) { row.classList.add('fail'); row.classList.remove('ok'); }
     if (mk) mk.innerHTML = '<span style="color:var(--danger)">没找到，点右边 ⇄ 换一个</span>';
-    if (mt) mt.textContent = fmtTime(mp.duration);
+    if (mt) mt.textContent = fmtTime(qq.duration);
     return;
   }
   if (row) { row.classList.add('ok'); row.classList.remove('fail'); }
@@ -1448,7 +1452,7 @@ function refreshImportProgress() {
 
 /* ------------------------------------------------------------ 响度均衡 */
 /**
- * 某弹幕网站音源的响度差异很大：无损修复版普遍偏响，翻录/现场版普遍偏轻。
+ * B 站音源的响度差异很大：无损修复版普遍偏响，翻录/现场版普遍偏轻。
  * 这里用 Web Audio 做两件事：
  *   1) 轻压缩 —— 把过响的峰值压住，避免削波破音；
  *   2) 自动增益 —— 实时测 RMS，把偏轻的提上来、偏响的降下去（目标约 -18 dBFS）。
@@ -1698,7 +1702,7 @@ function openAddDialog(song) {
 
 /* -------------------------------------------------------------- 事件绑定 */
 function bindGlobal() {
-  // 图片兜底：后端代理失败 → 直连 某弹幕网站原图 → 占位图（捕获阶段监听，img 的 error 不冒泡）
+  // 图片兜底：后端代理失败 → 直连 B 站原图 → 占位图（捕获阶段监听，img 的 error 不冒泡）
   document.addEventListener('error', (e) => {
     const el = e.target;
     if (!el || el.tagName !== 'IMG') return;
