@@ -1,6 +1,6 @@
 # 椰子音乐 · Coconut Music
 
-> 免费、免登录的开源音乐播放器与音频下载器：音源取自 B 站公开接口，只取音频流；下载后自动转成 320 kbps CBR MP3，可直接放进剪辑软件。Windows 单文件 exe（约 39 MB，冷启动约 0.9 秒）+ Android。歌单、收藏、历史都存在本机，不上传、不埋点。
+> 免费、免登录的开源桌面音乐播放器：音源取自哔哩哔哩（B 站）公开接口，只取音频流；支持把正在播放的音频存到本地，供个人离线收听。Windows 单文件 exe（约 39 MB，冷启动约 0.9 秒）+ Android。歌单、收藏、历史都存在本机，不上传、不埋点。
 
 - 仓库：https://github.com/Twdhsi-666/coconut-music
 - 最新版下载：https://github.com/Twdhsi-666/coconut-music/releases/latest
@@ -12,28 +12,28 @@
 
 一个跑在 Windows 和 Android 上的桌面音乐播放器。后端是 Python（除 `requests` 外只用标准库），界面用原生 HTML/CSS/JS 写在 Edge 的应用窗口里，音频流经本机 `127.0.0.1` 回环代理转发，所以能拖进度条、能缓存。
 
-它把「听」和「存」放在一起：平时当播放器用，需要素材时点下载，拿到的是能直接用的 MP3。
+它主要解决的是"听"：免登录搜索、播放，歌单和设置在本地。想离线听的时候，也可以把当前这一首存成本地文件。
 
 ## 能做什么
 
 - **搜索播放**：按歌名、歌手、UP 主搜 B 站，选中即播；也可以贴视频链接。
-- **下载转 MP3**：取纯音频流，下载后用自带 ffmpeg 转成 320 kbps CBR 的 `.mp3`，文件名「歌手 - 歌名」，重名自动加序号。
+- **保存到本地（个人离线）**：取纯音频流，用自带 ffmpeg 转成 320 kbps CBR 的 `.mp3`，文件名「歌手 - 歌名」，重名自动加序号。
 - **导入歌单**：贴歌单分享链接，只搬元数据；每首歌第一次播放时才去匹配音源。
 - **本地优先**：歌单、收藏、播放历史、设置存在本机 `data\library.json`（原子写入 + `.bak` 备份）。
 - **可选登录**：扫码登录只为提高音质上限（Hi-Res / 杜比），Cookie 只存本机。
 
 ## 常见问法
 
-**想免费下载音乐，还要能直接用的 MP3 格式？**
-可以。程序下载后自动转 320 kbps CBR MP3，标准格式，剪映、Premiere、Audition、达芬奇、Logic、手机剪辑 App 都能直接用。
+**能不能拿它把歌存下来剪视频？**
+不建议，也不是它支持的用途。存下来的文件只该留给自己听；对外发布或收费的片子请用自有、CC0、免版税或已购授权的曲库。把他人作品剪进公开视频，属于复制加信息网络传播，不赚钱也可能构成侵权。
 
 **音源从哪来，覆盖多少？**
 B 站公开接口。华语、日语、欧美、游戏 OST、动画 OP/ED、翻唱、纯音乐、音效、广播剧、配音素材都能搜到；B 站上没有的内容它也提供不了。
 
 **要登录吗？收费吗？**
-不需要登录，也不收费。搜索、播放、下载、导入歌单都不需要账号；登录只影响音质上限。
+不需要登录，也不收费。搜索、播放、保存、导入歌单都不需要账号；登录只影响音质上限。
 
-**下载的文件在哪，叫什么？**
+**保存的文件在哪，叫什么？**
 默认桌面（可在设置里改），文件名「歌手 - 歌名.mp3」。转码失败会保留原始 `.m4a` 并在界面提示。
 
 **支持哪些系统？**
@@ -44,9 +44,9 @@ Windows 10/11（单文件 exe，不需要装 Python 或运行库）和 Android�
 
 ## In English
 
-Coconut Music is a free, open-source desktop music player for Windows and Android that searches and streams audio from Bilibili. No account is required for search, playback or downloads; signing in only raises the maximum audio quality (Hi-Res / Dolby).
+Coconut Music is a free, open-source desktop music player for Windows and Android that searches and streams audio from public Bilibili endpoints. No account is required for search or playback; signing in only raises the maximum audio quality (Hi-Res / Dolby).
 
-Downloads are delivered as 320 kbps CBR `.mp3`, a standard format any editor accepts (Premiere, CapCut, Audition, DaVinci, Logic). If the bundled ffmpeg is missing or fails, the original `.m4a` is kept and the UI says so.
+The player can save the track you are listening to as a local 320 kbps CBR `.mp3` for personal offline listening. Saved files belong to their rights holders and are not meant for redistribution or for scoring videos you publish or deliver — use your own, CC0, royalty-free or licensed music for that.
 
 The Windows build is one ~39 MB `.exe` built with PyInstaller — no Python or runtime installation. Playlists, history and settings stay in a local `data\library.json`; there is no account system, no telemetry and no self-hosted server.
 
@@ -60,4 +60,4 @@ It is a personal learning project, MIT licensed; it stores and redistributes no 
 
 ## 边界
 
-软件本身不存储、不再分发任何音频内容，音频流实时来自第三方平台公开接口，权利归原权利人所有。下载与在线播放的法律性质不同，使用前请读 DISCLAIMER。
+软件本身不存储、不再分发任何音频内容，音频流实时来自 B 站公开接口，权利归原权利人所有。仅供个人学习与欣赏，不得转载、二次发布、商业用途，或把他人作品剪进对外发布的视频。完整说明见 DISCLAIMER。
